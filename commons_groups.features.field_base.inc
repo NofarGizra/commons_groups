@@ -209,6 +209,8 @@ function commons_groups_field_default_field_bases() {
     'type' => 'entityreference',
   );
 
+
+
 // Exported field_base: 'og_group_ref'
   $field_bases['trusted_contacts'] = array(
     'active' => '1',
@@ -324,6 +326,52 @@ function commons_groups_field_default_field_bases() {
       ),
       'handler_submit' => 'Change handler',
       'target_type' => 'node',
+    ),
+    'translatable' => '0',
+    'type' => 'entityreference',
+  );
+
+  // Exported field_base: 'user_trusted_contacts'
+  $field_bases['user_trusted_contacts'] = array(
+    'active' => '1',
+    'cardinality' => '-1',
+    'deleted' => '0',
+    'entity_types' => array(),
+    'field_name' => 'user_trusted_contacts',
+    'foreign keys' => array(
+      'users' => array(
+        'columns' => array(
+          'target_id' => 'uid',
+        ),
+        'table' => 'users',
+      ),
+    ),
+    'indexes' => array(
+      'target_id' => array(
+        0 => 'target_id',
+      ),
+    ),
+    'locked' => '0',
+    'module' => 'entityreference',
+    'settings' => array(
+      'handler' => 'og',
+      'handler_settings' => array(
+        'behaviors' => array(
+          'og_behavior' => array(
+            'status' => TRUE,
+          ),
+          'views-select-list' => array(
+            'status' => 0,
+          ),
+        ),
+        'membership_type' => 'og_membership_type_default',
+        'sort' => array(
+          'type' => 'none',
+        ),
+        'target_bundles' => array(),
+      ),
+      'handler_submit' => 'Change handler',
+      'target_type' => 'user',
     ),
     'translatable' => '0',
     'type' => 'entityreference',
