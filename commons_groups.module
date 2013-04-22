@@ -565,3 +565,111 @@ function commons_groups_preprocess_views_view_grid(&$variables, $hook) {
     $variables['title'] = t('Organizers');
   }
 }
+
+
+/**
+ * Implement hook_field_formatter_info().
+ */
+function commons_group_field_formatter_info() {
+  return array(
+    'trusted_contact_btn' => array(
+      'label' => t('Trusted Contact button'),
+      'field types' => array('list_boolean'),
+      'settings' => array(
+        'field_name' => FALSE,
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function commons_group_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  global $user;
+
+  $settings = $display['settings'];
+
+  switch ($display['type']) {
+    case 'trusted_contact_btn':
+      $account = clone $user;
+      if (!og_is_group($entity_type, $entity)) {
+        return;
+      }
+
+      if (!empty($entity->uid) && ($entity->uid == $account->uid)) {
+        // User is the group manager.
+        return;
+      }
+
+      list($id,, $bundle) = entity_extract_ids($entity_type, $entity);
+      if (og_is_member($entity_type, $id, 'user', $account, array(OG_STATE_ACTIVE, OG_STATE_PENDING))) {
+        if (og_user_access($entity_type, $id, 'unsubscribe', $account)) {
+          // @todo: Make an Un-trust button.
+          $links['title'] = t('Un-Trust');
+          $token = drupal_get_token('un' . ':' . $id . ':' . $account->uid);
+          $links['href'] = "un-trust/$id/$token";
+        }
+      }
+      else {
+        if (og_is_member($entity_type, $id, 'user', $account, array(OG_STATE_BLOCKED))) {
+          // If user is blocked, they should not be able to apply for
+          // membership.
+          return;
+        }
+
+        // Check if user can subscribe to the field.
+        if (empty($settings['field_name']) && $audience_field_name = og_get_best_group_audience_field('user', $account, $entity_type, $bundle)) {
+          $settings['field_name'] = $audience_field_name;
+        }
+        if (!$settings['field_name']) {
+          return;
+        }
+
+        $field_info = field_info_field($settings['field_name']);
+
+        // Check if entity is referencable.
+        if ($field_info['settings']['target_type'] != $entity_type) {
+          // Group type doesn't match.
+          return;
+        }
+        if (!empty($field_info['settings']['handler_settings']['target_bundles']) && !in_array($bundle, $field_info['settings']['handler_settings']['target_bundles'])) {
+          // Bundles don't match.
+          return;
+        }
+
+        if (!og_check_field_cardinality('user', $account, $settings['field_name'])) {
+          // @todo: Is there a limit?
+          $element[0] = array('#markup' => format_plural($field_info['cardinality'], 'You are already registered to another group', 'You are already registered to @count groups'));
+          return $element;
+        }
+
+        // @todo: Make a working Trust link.
+        $token = drupal_get_token('request' . ':' . $id . ':' . $account->uid);
+        $url = "request-trust/$id/$token";
+
+        $links['title'] = t('Trusted Contact');
+        if ($account->uid) {
+          $links['href'] = $url;
+        }
+        else {
+          // @todo: Is this ok?
+          $links['href'] = 'user/login';
+          $links['options'] = array('query' => array('destination' => $url));
+        }
+      }
+
+      if (!empty($links['title'])) {
+        $links += array('options' => array());
+        $element[0] = array(
+          '#type' => 'link',
+          '#title' => $links['title'],
+          '#href' => $links['href'],
+          '#options' => $links['options'],
+        );
+        return $element;
+      }
+      // User didn't have permissions.
+      break;
+  }
+}
