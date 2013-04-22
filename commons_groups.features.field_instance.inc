@@ -271,6 +271,74 @@ function commons_groups_field_definition(&$field_instances, $entity_type, $bundl
     ),
   );
 
+  // Exported field_instance: 'node-post-trusted_contacts'
+  $field_instances["$entity_type-$bundle-trusted_contacts"] = array(
+    'bundle' => $bundle,
+    'default_value' => NULL,
+    'default_value_function' => '',
+    'deleted' => '0',
+    'description' => 'Trusted Contacts',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'og_ui',
+        'settings' => array(),
+        'type' => 'og_list_default',
+        'weight' => 11,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => $entity_type,
+    'field_name' => 'og_group_ref',
+    'label' => 'Groups',
+    'required' => 0,
+    'settings' => array(
+      'behaviors' => array(
+        'og_widget' => array(
+          'admin' => array(
+            'widget_type' => 'entityreference_autocomplete_tags',
+          ),
+          'default' => array(
+            'widget_type' => 'entityreference_autocomplete_tags',
+          ),
+          'status' => TRUE,
+        ),
+        'prepopulate' => array(
+          'action' => 'none',
+          'fallback' => 'hide',
+          'og_context' => 1,
+          'skip_perm' => '0',
+          'status' => 1,
+        ),
+      ),
+      'user_register_form' => FALSE,
+    ),
+    'view modes' => array(
+      'full' => array(
+        'custom settings' => FALSE,
+        'label' => 'Full',
+        'type' => 'og_list_default',
+      ),
+      'teaser' => array(
+        'custom settings' => FALSE,
+        'label' => 'Teaser',
+        'type' => 'og_list_default',
+      ),
+    ),
+    'widget' => array(
+      'active' => 0,
+      'module' => 'og',
+      'settings' => array(),
+      'type' => 'og_complex',
+      'weight' => 5,
+    ),
+  );
+
   // Exported field_instance: 'node-group-field_group_logo'
   $field_instances['node-group-field_group_logo'] = array(
     'bundle' => 'group',

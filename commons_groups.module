@@ -59,6 +59,19 @@ function commons_groups_block_view() {
 }
 
 /**
+ * Implements hook_default_og_membership_type().
+ */
+function commons_groups_default_og_membership_type() {
+  $items = array();
+  $items['trusted_contacts'] = entity_import('og_membership_type', '{
+    "name" : "trusted_contacts",
+    "description" : "Trusted Contacts",
+    "rdf_mapping" : []
+  }');
+  return $items;
+}
+
+/**
  * Implements hook_features_pipe_alter().
  *
  */
