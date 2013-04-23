@@ -364,7 +364,7 @@ function commons_groups_field_default_field_bases() {
             'status' => 0,
           ),
         ),
-        'membership_type' => 'og_membership_type_default',
+        'membership_type' => 'trusted_contacts',
         'sort' => array(
           'type' => 'none',
         ),
