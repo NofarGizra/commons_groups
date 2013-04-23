@@ -698,7 +698,17 @@ function commons_groups_field_formatter_view($entity_type, $entity, $field, $ins
 function commons_groups_request_trust($account) {
   global $user;
 
-  og_group('user', $account->uid, array());
+  $og_membership = og_group('user', $account, array('field_name' => 'user_trusted_contacts' ,'state' => OG_STATE_PENDING));
+
+  $wrapper = entity_metadata_wrapper('og_membership', $og_membership);
+  $wrapper->field_my_request->set(1);
+  $wrapper->save();
+
+  $og_membership2 = og_group('user', $user, array('entity' => $account, 'field_name' => 'user_trusted_contacts' ,'state' => OG_STATE_PENDING));
+
+  $wrapper = entity_metadata_wrapper('og_membership', $og_membership2);
+  $wrapper->field_original_og_membership->set($og_membership);
+  $wrapper->save();
 }
 
 function commons_groups_un_trust($account) {
