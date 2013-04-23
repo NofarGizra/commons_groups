@@ -570,10 +570,10 @@ function commons_groups_preprocess_views_view_grid(&$variables, $hook) {
 /**
  * Implement hook_field_formatter_info().
  */
-function commons_group_field_formatter_info() {
+function commons_groups_field_formatter_info() {
   return array(
-    'trusted_contact_btn' => array(
-      'label' => t('Trusted Contact button'),
+    'trusted_contact' => array(
+      'label' => t('Trusted Contact'),
       'field types' => array('list_boolean'),
       'settings' => array(
         'field_name' => FALSE,
@@ -585,13 +585,13 @@ function commons_group_field_formatter_info() {
 /**
  * Implements hook_field_formatter_view().
  */
-function commons_group_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+function commons_groups_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   global $user;
 
   $settings = $display['settings'];
 
   switch ($display['type']) {
-    case 'trusted_contact_btn':
+    case 'trusted_contact':
       $account = clone $user;
       if (!og_is_group($entity_type, $entity)) {
         return;
