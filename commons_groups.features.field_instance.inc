@@ -10,15 +10,6 @@
 function commons_groups_field_default_field_instances() {
   $field_instances = array();
 
-  $commons_groups_entity_types = commons_groups_get_group_content_entity_types();
-  if (!empty($commons_groups_entity_types)) {
-    foreach ($commons_groups_entity_types as $entity_type => $bundles) {
-      foreach(array_keys($bundles) as $bundle) {
-        commons_groups_field_definition($field_instances, $entity_type, $bundle);
-      }
-    }
-  }
-
   // Exported field_instance: 'node-group-body'
   $field_instances['node-group-body'] = array(
     'bundle' => 'group',
@@ -466,6 +457,15 @@ function commons_groups_field_default_field_instances() {
       'weight' => 2,
     ),
   );
+
+  $commons_groups_entity_types = commons_groups_get_group_content_entity_types();
+  if (!empty($commons_groups_entity_types)) {
+    foreach ($commons_groups_entity_types as $entity_type => $bundles) {
+      foreach(array_keys($bundles) as $bundle) {
+        commons_groups_field_definition($field_instances, $entity_type, $bundle);
+      }
+    }
+  }
 
   // Translatables
   // Included for use with string extractors like potx.
