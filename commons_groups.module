@@ -24,6 +24,29 @@ function commons_groups_entity_view($entity, $type, $view_mode, $langcode) {
     drupal_set_breadcrumb($breadcrumb);
   }
 }
+
+function commons_groups_menu() {
+  $items = array();
+
+  $items['request-trust/%user/%'] = array(
+    'page callback' => 'commons_groups_request_trust',
+    'page arguments' => array(1),
+    'access callback' => 'commons_groups_request_trust_access',
+    'access arguments'	=>	array(1,2),
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['un-trust/%user/%'] = array(
+    'page callback' => 'commons_groups_un_trust',
+    'page arguments' => array(1),
+    'access callback' => 'commons_groups_un_trust_access',
+    'access arguments'	=>	array(1,2),
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
 /**
  * Implements hook_menu_alter().
  */
@@ -605,7 +628,6 @@ function commons_groups_field_formatter_view($entity_type, $entity, $field, $ins
       list($id,, $bundle) = entity_extract_ids($entity_type, $entity);
       if (og_is_member($entity_type, $id, 'user', $account, array(OG_STATE_ACTIVE, OG_STATE_PENDING))) {
         if (og_user_access($entity_type, $id, 'unsubscribe', $account)) {
-          // @todo: Make an Un-trust button.
           $links['title'] = t('Un-Trust');
           $token = drupal_get_token('un' . ':' . $id . ':' . $account->uid);
           $links['href'] = "un-trust/$id/$token";
@@ -644,7 +666,6 @@ function commons_groups_field_formatter_view($entity_type, $entity, $field, $ins
           return $element;
         }
 
-        // @todo: Make a working Trust link.
         $token = drupal_get_token('request' . ':' . $id . ':' . $account->uid);
         $url = "request-trust/$id/$token";
 
@@ -672,4 +693,28 @@ function commons_groups_field_formatter_view($entity_type, $entity, $field, $ins
       // User didn't have permissions.
       break;
   }
+}
+
+function commons_groups_request_trust($account) {
+  global $user;
+
+  og_group('user', $account->uid, array());
+}
+
+function commons_groups_un_trust($account) {
+  global $user;
+
+  og_ungroup('user', $account->uid);
+}
+
+function commons_groups_request_trust_access($account, $token) {
+  global $user;
+
+  return drupal_valid_token($token, 'request' . ':' . $account->uid . ':' . $user->uid);
+}
+
+function commons_groups_un_trust_access($account, $token) {
+  global $user;
+
+  return drupal_valid_token($token, 'un' . ':' . $account->uid . ':' . $user->uid);
 }
