@@ -44,6 +44,22 @@ function commons_groups_menu() {
     'type' => MENU_CALLBACK,
   );
 
+  $items['accept-trust/%user/%'] = array(
+    'page callback' => 'commons_groups_accept_trust',
+    'page arguments' => array(1),
+    'access callback' => 'commons_groups_accept_trust_access',
+    'access arguments'	=>	array(1,2),
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['ignore-trust/%user/%'] = array(
+    'page callback' => 'commons_groups_ignore_trust',
+    'page arguments' => array(1),
+    'access callback' => 'commons_groups_ignore_trust_access',
+    'access arguments'	=>	array(1,2),
+    'type' => MENU_CALLBACK,
+  );
+
   return $items;
 }
 
@@ -717,6 +733,100 @@ function commons_groups_un_trust($account) {
   og_ungroup('user', $account->uid);
 }
 
+function commons_groups_accept_trust($account) {
+  global $user;
+
+  $query = new EntityFieldQuery();
+  $return = $query
+    ->entityCondition('entity_type', 'og_membership')
+    ->propertyCondition('group_type', 'user')
+    ->propertyCondition('entity_type', 'user')
+    ->propertyCondition('etid', $user->uid)
+    ->propertyCondition('gid', $account->uid)
+    ->execute();
+
+  if (empty($return['og_membership'])) {
+    // No such request.
+    return;
+  }
+
+  $membership_id = key($return['og_membership']);
+  $wrapper = entity_metadata_wrapper('og_membership', $membership_id);
+
+  if ($wrapper->field_my_request->value()) {
+    // User cannot accept his own request.
+    return;
+  }
+
+  $wrapper->state->set(1);
+  $wrapper->field_confirmation->set(1);
+  $wrapper->field_response_date->set(time());
+  $wrapper->save();
+
+  $query = new EntityFieldQuery();
+  $return = $query
+    ->entityCondition('entity_type', 'og_membership')
+    ->propertyCondition('group_type', 'user')
+    ->propertyCondition('entity_type', 'user')
+    ->propertyCondition('etid', $account->uid)
+    ->propertyCondition('gid', $user->uid)
+    ->execute();
+  $membership_id = key($return['og_membership']);
+
+  $wrapper = entity_metadata_wrapper('og_membership', $membership_id);
+  $wrapper->state->set(1);
+  $wrapper->field_confirmation->set(1);
+  $wrapper->field_response_date->set(time());
+  $wrapper->save();
+}
+
+function commons_groups_ignore_trust($account) {
+  global $user;
+
+  $query = new EntityFieldQuery();
+  $return = $query
+    ->entityCondition('entity_type', 'og_membership')
+    ->propertyCondition('group_type', 'user')
+    ->propertyCondition('entity_type', 'user')
+    ->propertyCondition('etid', $user->uid)
+    ->propertyCondition('gid', $account->uid)
+    ->execute();
+
+  if (empty($return['og_membership'])) {
+    // No such request.
+    return;
+  }
+
+  $membership_id = key($return['og_membership']);
+  $wrapper = entity_metadata_wrapper('og_membership', $membership_id);
+
+  if ($wrapper->field_my_request->value()) {
+    // User cannot ignore his own request.
+    return;
+  }
+
+  $wrapper->state->set(3);
+  $wrapper->field_response_date->set(time());
+  $wrapper->save();
+
+  $query = new EntityFieldQuery();
+  $return = $query
+    ->entityCondition('entity_type', 'og_membership')
+    ->propertyCondition('group_type', 'user')
+    ->propertyCondition('entity_type', 'user')
+    ->propertyCondition('etid', $account->uid)
+    ->propertyCondition('gid', $user->uid)
+    ->execute();
+  $membership_id = key($return['og_membership']);
+
+  $wrapper = entity_metadata_wrapper('og_membership', $membership_id);
+  $wrapper->state->set(3);
+  $wrapper->field_response_date->set(time());
+  $wrapper->save();
+
+  dpm($wrapper->state->label());
+}
+
 function commons_groups_request_trust_access($account, $token) {
   global $user;
 
@@ -727,4 +837,16 @@ function commons_groups_un_trust_access($account, $token) {
   global $user;
 
   return drupal_valid_token($token, 'un' . ':' . $account->uid . ':' . $user->uid);
+}
+
+function commons_groups_accept_trust_access($account, $token) {
+  global $user;
+
+  return drupal_valid_token($token, 'accept' . ':' . $account->uid . ':' . $user->uid);
+}
+
+function commons_groups_ignore_trust_access($account, $token) {
+  global $user;
+
+  return drupal_valid_token($token, 'ignore' . ':' . $account->uid . ':' . $user->uid);
 }
