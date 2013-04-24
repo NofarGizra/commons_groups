@@ -107,13 +107,13 @@ function commons_groups_field_default_field_bases() {
     'type' => 'list_boolean',
   );
 
-  // Exported field_base: 'field_ignore_url'
-  $field_bases['field_ignore_url'] = array(
+  // Exported field_base: 'field_ignore_link'
+  $field_bases['field_ignore_link'] = array(
     'active' => '1',
     'cardinality' => '1',
     'deleted' => '0',
     'entity_types' => array(),
-    'field_name' => 'field_ignore_url',
+    'field_name' => 'field_ignore_link',
     'foreign keys' => array(),
     'indexes' => array(),
     'locked' => '0',

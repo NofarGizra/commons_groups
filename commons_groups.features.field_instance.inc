@@ -125,8 +125,8 @@ function commons_groups_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'message-trusted_contact_request_pending-field_ignore_url'
-  $field_instances['message-trusted_contact_request_pending-field_ignore_url'] = array(
+  // Exported field_instance: 'message-trusted_contact_request_pending-field_ignore_link'
+  $field_instances['message-trusted_contact_request_pending-field_ignore_link'] = array(
     'bundle' => 'trusted_contact_request_pending',
     'default_value' => NULL,
     'deleted' => '0',
@@ -153,8 +153,8 @@ function commons_groups_field_default_field_instances() {
       ),
     ),
     'entity_type' => 'message',
-    'field_name' => 'field_ignore_url',
-    'label' => 'Ignore URL',
+    'field_name' => 'field_ignore_link',
+    'label' => 'Ignore link',
     'required' => 1,
     'settings' => array(
       'attributes' => array(
