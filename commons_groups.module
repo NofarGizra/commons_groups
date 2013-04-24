@@ -752,8 +752,8 @@ function commons_groups_request_trust($account, $ajax) {
   // Notify.
 
   $arguments = array(
-    '@{approve-url}' => url('approve-trust/' . $og_membership->id . '/' . $token),
-    '@{ignore-url}' => url('ignore-trust/' . $og_membership->id . '/' . $token),
+    '@{approve-url}' => l('Approve', 'approve-trust/' . $og_membership->id . '/' . $token),
+    '@{ignore-url}' => l('Ignore', 'ignore-trust/' . $og_membership->id . '/' . $token),
   );
   $message = message_create('trusted_contact_request_pending', array('uid' => $account->uid, 'arguments' => $arguments));
 
