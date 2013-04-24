@@ -10,6 +10,77 @@
 function commons_groups_field_default_field_bases() {
   $field_bases = array();
 
+  // Exported field_base: 'field_accept_link'
+  $field_bases['field_accept_link'] = array(
+    'active' => '1',
+    'cardinality' => '1',
+    'deleted' => '0',
+    'entity_types' => array(),
+    'field_name' => 'field_accept_link',
+    'foreign keys' => array(),
+    'indexes' => array(),
+    'locked' => '0',
+    'module' => 'link',
+    'settings' => array(
+      'attributes' => array(
+        'class' => '',
+        'rel' => '',
+        'target' => 'default',
+      ),
+      'display' => array(
+        'url_cutoff' => 80,
+      ),
+      'enable_tokens' => 1,
+      'title' => 'optional',
+      'title_maxlength' => 128,
+      'title_value' => '',
+      'url' => 0,
+    ),
+    'translatable' => '0',
+    'type' => 'link_field',
+  );
+
+  // Exported field_base: 'field_approving_user'
+  $field_bases['field_approving_user'] = array(
+    'active' => '1',
+    'cardinality' => '1',
+    'deleted' => '0',
+    'entity_types' => array(),
+    'field_name' => 'field_approving_user',
+    'foreign keys' => array(
+      'node' => array(
+        'columns' => array(
+          'target_id' => 'nid',
+        ),
+        'table' => 'node',
+      ),
+    ),
+    'indexes' => array(
+      'target_id' => array(
+        0 => 'target_id',
+      ),
+    ),
+    'locked' => '0',
+    'module' => 'entityreference',
+    'settings' => array(
+      'handler' => 'base',
+      'handler_settings' => array(
+        'behaviors' => array(
+          'views-select-list' => array(
+            'status' => 0,
+          ),
+        ),
+        'sort' => array(
+          'type' => 'none',
+        ),
+        'target_bundles' => array(),
+      ),
+      'target_type' => 'user',
+    ),
+    'translatable' => '0',
+    'type' => 'entityreference',
+  );
+
   // Exported field_base: 'field_confirmation'
   $field_bases['field_confirmation'] = array(
     'active' => '1',
@@ -34,6 +105,36 @@ function commons_groups_field_default_field_bases() {
     ),
     'translatable' => '0',
     'type' => 'list_boolean',
+  );
+
+  // Exported field_base: 'field_ignore_url'
+  $field_bases['field_ignore_url'] = array(
+    'active' => '1',
+    'cardinality' => '1',
+    'deleted' => '0',
+    'entity_types' => array(),
+    'field_name' => 'field_ignore_url',
+    'foreign keys' => array(),
+    'indexes' => array(),
+    'locked' => '0',
+    'module' => 'link',
+    'settings' => array(
+      'attributes' => array(
+        'class' => '',
+        'rel' => '',
+        'target' => 'default',
+      ),
+      'display' => array(
+        'url_cutoff' => 80,
+      ),
+      'enable_tokens' => 1,
+      'title' => 'optional',
+      'title_maxlength' => 128,
+      'title_value' => '',
+      'url' => 0,
+    ),
+    'translatable' => '0',
+    'type' => 'link_field',
   );
 
   // Exported field_base: 'field_my_request'
@@ -70,11 +171,11 @@ function commons_groups_field_default_field_bases() {
     'entity_types' => array(),
     'field_name' => 'field_original_og_membership',
     'foreign keys' => array(
-      'node' => array(
+      'og_membership' => array(
         'columns' => array(
-          'target_id' => 'nid',
+          'target_id' => 'id',
         ),
-        'table' => 'node',
+        'table' => 'og_membership',
       ),
     ),
     'indexes' => array(
@@ -100,6 +201,47 @@ function commons_groups_field_default_field_bases() {
         ),
       ),
       'target_type' => 'og_membership',
+    ),
+    'translatable' => '0',
+    'type' => 'entityreference',
+  );
+
+  // Exported field_base: 'field_requesting_user'
+  $field_bases['field_requesting_user'] = array(
+    'active' => '1',
+    'cardinality' => '1',
+    'deleted' => '0',
+    'entity_types' => array(),
+    'field_name' => 'field_requesting_user',
+    'foreign keys' => array(
+      'node' => array(
+        'columns' => array(
+          'target_id' => 'nid',
+        ),
+        'table' => 'node',
+      ),
+    ),
+    'indexes' => array(
+      'target_id' => array(
+        0 => 'target_id',
+      ),
+    ),
+    'locked' => '0',
+    'module' => 'entityreference',
+    'settings' => array(
+      'handler' => 'base',
+      'handler_settings' => array(
+        'behaviors' => array(
+          'views-select-list' => array(
+            'status' => 0,
+          ),
+        ),
+        'sort' => array(
+          'type' => 'none',
+        ),
+        'target_bundles' => array(),
+      ),
+      'target_type' => 'user',
     ),
     'translatable' => '0',
     'type' => 'entityreference',

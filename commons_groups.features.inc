@@ -75,6 +75,52 @@ function commons_groups_image_default_styles() {
 }
 
 /**
+ * Implements hook_default_message_type().
+ */
+function commons_groups_default_message_type() {
+  $items = array();
+  $items['trusted_contact_request_approved'] = entity_import('message_type', '{
+    "name" : "trusted_contact_request_approved",
+    "description" : "Trusted-Contact request approved",
+    "argument_keys" : [],
+    "argument" : [],
+    "category" : "message_type",
+    "data" : { "purge" : { "override" : 0, "enabled" : 0, "quota" : "", "days" : "" } },
+    "language" : "",
+    "arguments" : null,
+    "message_text" : { "und" : [
+        {
+          "value" : "\\u003Cp\\u003E\\u003Cspan\\u003E[message:field-\\u003C\\/span\\u003E\\u003Cspan style=\\u0022font-size: 13px;\\u0022\\u003Eapproving\\u003C\\/span\\u003E\\u003Cspan\\u003E-user:field-name-first]\\u0026nbsp;[message:field-approving-user:field-name-last] accepted your Trusted-Contact request.\\u003C\\/span\\u003E\\u003C\\/p\\u003E\\r\\n",
+          "format" : "filtered_html",
+          "safe_value" : "\\u003Cp\\u003E[message:field-approving-user:field-name-first]\\u0026nbsp;[message:field-approving-user:field-name-last] accepted your Trusted-Contact request.\\u003C\\/p\\u003E"
+        }
+      ]
+    },
+    "rdf_mapping" : []
+  }');
+  $items['trusted_contact_request_pending'] = entity_import('message_type', '{
+    "name" : "trusted_contact_request_pending",
+    "description" : "Trusted-Contact request pending",
+    "argument_keys" : [],
+    "argument" : [],
+    "category" : "message_type",
+    "data" : { "purge" : { "override" : 0, "enabled" : 0, "quota" : "", "days" : "" } },
+    "language" : "",
+    "arguments" : null,
+    "message_text" : { "und" : [
+        {
+          "value" : "\\u003Cp\\u003EYou have a Trusted-Contact request pending.\\u003C\\/p\\u003E\\r\\n\\r\\n\\u003Cp\\u003E[message:field-requesting-user:field-name-first] [message:field-requesting-user:field-name-last]\\u003C\\/p\\u003E\\r\\n\\r\\n\\u003Cp\\u003EYou may accept or ignore.\\u003C\\/p\\u003E\\r\\n\\r\\n\\u003Cp\\u003E[message:field_accept_link] \\u0026nbsp;|\\u0026nbsp;[message:field_ignore_link]\\u003C\\/p\\u003E\\r\\n\\r\\n\\u003Cp\\u003E\\u0026nbsp;\\u003C\\/p\\u003E\\r\\n",
+          "format" : "filtered_html",
+          "safe_value" : "\\u003Cp\\u003EYou have a Trusted-Contact request pending.\\u003C\\/p\\u003E\\n\\n\\u003Cp\\u003E[message:field-requesting-user:field-name-first] [message:field-requesting-user:field-name-last]\\u003C\\/p\\u003E\\n\\n\\u003Cp\\u003EYou may accept or ignore.\\u003C\\/p\\u003E\\n\\n\\u003Cp\\u003E[message:field_accept_link] \\u0026nbsp;|\\u0026nbsp;[message:field_ignore_link]\\u003C\\/p\\u003E\\n\\n\\u003Cp\\u003E\\u0026nbsp;\\u003C\\/p\\u003E"
+        }
+      ]
+    },
+    "rdf_mapping" : []
+  }');
+  return $items;
+}
+
+/**
  * Implements hook_node_info().
  */
 function commons_groups_node_info() {

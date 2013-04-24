@@ -10,6 +10,236 @@
 function commons_groups_field_default_field_instances() {
   $field_instances = array();
 
+  // Exported field_instance: 'message-trusted_contact_request_approved-field_approving_user'
+  $field_instances['message-trusted_contact_request_approved-field_approving_user'] = array(
+    'bundle' => 'trusted_contact_request_approved',
+    'default_value' => NULL,
+    'default_value_function' => '',
+    'deleted' => '0',
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'entityreference',
+        'settings' => array(
+          'link' => FALSE,
+        ),
+        'type' => 'entityreference_label',
+        'weight' => 0,
+      ),
+      'message_notify_email_body' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'message_notify_email_subject' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'message',
+    'field_name' => 'field_approving_user',
+    'label' => 'Approving user',
+    'required' => 1,
+    'settings' => array(
+      'behaviors' => array(
+        'prepopulate' => array(
+          'status' => 0,
+        ),
+      ),
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'entityreference',
+      'settings' => array(
+        'match_operator' => 'CONTAINS',
+        'path' => '',
+        'size' => '60',
+      ),
+      'type' => 'entityreference_autocomplete',
+      'weight' => '1',
+    ),
+  );
+
+  // Exported field_instance: 'message-trusted_contact_request_pending-field_accept_link'
+  $field_instances['message-trusted_contact_request_pending-field_accept_link'] = array(
+    'bundle' => 'trusted_contact_request_pending',
+    'default_value' => NULL,
+    'deleted' => '0',
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'link',
+        'settings' => array(),
+        'type' => 'link_default',
+        'weight' => 1,
+      ),
+      'message_notify_email_body' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'message_notify_email_subject' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'message',
+    'field_name' => 'field_accept_link',
+    'label' => 'Accept link',
+    'required' => 1,
+    'settings' => array(
+      'attributes' => array(
+        'class' => '',
+        'configurable_title' => 0,
+        'rel' => '',
+        'target' => 'default',
+        'title' => '',
+      ),
+      'display' => array(
+        'url_cutoff' => '80',
+      ),
+      'enable_tokens' => 1,
+      'rel_remove' => 'default',
+      'title' => 'value',
+      'title_maxlength' => '128',
+      'title_value' => 'Accept',
+      'url' => 0,
+      'user_register_form' => FALSE,
+      'validate_url' => 1,
+    ),
+    'widget' => array(
+      'active' => 0,
+      'module' => 'link',
+      'settings' => array(),
+      'type' => 'link_field',
+      'weight' => '2',
+    ),
+  );
+
+  // Exported field_instance: 'message-trusted_contact_request_pending-field_ignore_url'
+  $field_instances['message-trusted_contact_request_pending-field_ignore_url'] = array(
+    'bundle' => 'trusted_contact_request_pending',
+    'default_value' => NULL,
+    'deleted' => '0',
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'link',
+        'settings' => array(),
+        'type' => 'link_default',
+        'weight' => 2,
+      ),
+      'message_notify_email_body' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'message_notify_email_subject' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'message',
+    'field_name' => 'field_ignore_url',
+    'label' => 'Ignore URL',
+    'required' => 1,
+    'settings' => array(
+      'attributes' => array(
+        'class' => '',
+        'configurable_title' => 0,
+        'rel' => '',
+        'target' => 'default',
+        'title' => '',
+      ),
+      'display' => array(
+        'url_cutoff' => '80',
+      ),
+      'enable_tokens' => 1,
+      'rel_remove' => 'default',
+      'title' => 'value',
+      'title_maxlength' => '128',
+      'title_value' => 'Ignore',
+      'url' => 0,
+      'user_register_form' => FALSE,
+      'validate_url' => 1,
+    ),
+    'widget' => array(
+      'active' => 0,
+      'module' => 'link',
+      'settings' => array(),
+      'type' => 'link_field',
+      'weight' => '3',
+    ),
+  );
+
+  // Exported field_instance: 'message-trusted_contact_request_pending-field_requesting_user'
+  $field_instances['message-trusted_contact_request_pending-field_requesting_user'] = array(
+    'bundle' => 'trusted_contact_request_pending',
+    'default_value' => NULL,
+    'default_value_function' => '',
+    'deleted' => '0',
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'entityreference',
+        'settings' => array(
+          'link' => FALSE,
+        ),
+        'type' => 'entityreference_label',
+        'weight' => 0,
+      ),
+      'message_notify_email_body' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'message_notify_email_subject' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'message',
+    'field_name' => 'field_requesting_user',
+    'label' => 'Requesting User',
+    'required' => 1,
+    'settings' => array(
+      'behaviors' => array(
+        'prepopulate' => array(
+          'status' => 0,
+        ),
+      ),
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'entityreference',
+      'settings' => array(
+        'match_operator' => 'CONTAINS',
+        'path' => '',
+        'size' => '60',
+      ),
+      'type' => 'entityreference_autocomplete',
+      'weight' => '1',
+    ),
+  );
+
   // Exported field_instance: 'node-group-body'
   $field_instances['node-group-body'] = array(
     'bundle' => 'group',
@@ -399,73 +629,6 @@ function commons_groups_field_default_field_instances() {
       'weight' => '2',
     ),
   );
-
-  // Exported field_instance: 'user-user-user_trusted_contacts'
-  $field_instances['user-user-user_trusted_contacts'] = array(
-    'bundle' => 'user',
-    'default_value' => NULL,
-    'default_value_function' => '',
-    'deleted' => '0',
-    'description' => '',
-    'display' => array(
-      'default' => array(
-        'label' => 'above',
-        'module' => 'og_ui',
-        'settings' => array(),
-        'type' => 'og_list_default',
-        'weight' => 4,
-      ),
-    ),
-    'entity_type' => 'user',
-    'field_name' => 'user_trusted_contacts',
-    'label' => 'Trusted Contacts',
-    'required' => 0,
-    'settings' => array(
-      'behaviors' => array(
-        'og_widget' => array(
-          'admin' => array(
-            'widget_type' => 'entityreference_autocomplete',
-          ),
-          'default' => array(
-            'widget_type' => 'options_select',
-          ),
-          'status' => TRUE,
-        ),
-        'prepopulate' => array(
-          'status' => 0,
-        ),
-      ),
-      'user_register_form' => 0,
-    ),
-    'view modes' => array(
-      'full' => array(
-        'custom settings' => FALSE,
-        'label' => 'Full',
-        'type' => 'og_list_default',
-      ),
-      'teaser' => array(
-        'custom settings' => FALSE,
-        'label' => 'Teaser',
-        'type' => 'og_list_default',
-      ),
-    ),
-    'widget' => array(
-      'active' => 0,
-      'module' => 'og',
-      'settings' => array(),
-      'type' => 'og_complex',
-      'weight' => 2,
-    ),
-  );
-
-  $commons_groups_entity_types = commons_groups_get_group_content_entity_types();
-  if (!empty($commons_groups_entity_types)) {
-    foreach ($commons_groups_entity_types as $entity_type => $bundles) {
-      foreach(array_keys($bundles) as $bundle) {
-        commons_groups_field_definition($field_instances, $entity_type, $bundle);
-      }
-    }
-  }
 
   // Translatables
   // Included for use with string extractors like potx.
