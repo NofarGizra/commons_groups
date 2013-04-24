@@ -657,7 +657,7 @@ function commons_groups_field_formatter_view($entity_type, $entity, $field, $ins
           // If user is pending, they should not be able to apply for
           // membership.
           $element[0] = array(
-            '#markup' => '<div class="trusted-request-pending">' . t('Pending') . '</div>',
+            '#markup' => '<div class="trusted-request-pending">' . t('Pending Contact') . '</div>',
           );
           return $element;
         }
@@ -767,7 +767,7 @@ function commons_groups_request_trust($account, $ajax) {
 
   if ($ajax == 'ajax') {
     $commands = array();
-    $commands[] = ajax_command_replace(".field-name-group-group a", '<div class="trusted-request-pending">' . t('Pending') . '</div>');
+    $commands[] = ajax_command_replace(".field-name-group-group a", '<div class="trusted-request-pending">' . t('Pending Contact') . '</div>');
     $page = array('#type' => 'ajax', '#commands' => $commands);
     ajax_deliver($page);
   }
