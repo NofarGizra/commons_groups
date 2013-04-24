@@ -37,8 +37,8 @@ function commons_groups_menu() {
   );
 
   $items['un-trust/%user/%'] = array(
-    'page callback' => 'commons_groups_un_trust',
-    'page arguments' => array(1),
+    'page callback' => 'og_ungroup',
+    'page arguments' => array('user', 1),
     'access callback' => 'commons_groups_un_trust_access',
     'access arguments'	=>	array(1,2),
     'type' => MENU_CALLBACK,
@@ -754,8 +754,6 @@ function commons_groups_request_trust($account) {
 }
 
 function commons_groups_un_trust($account) {
-  global $user;
-
   og_ungroup('user', $account->uid);
 }
 
