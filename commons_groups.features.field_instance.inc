@@ -65,126 +65,6 @@ function commons_groups_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'message-trusted_contact_request_pending-field_accept_link'
-  $field_instances['message-trusted_contact_request_pending-field_accept_link'] = array(
-    'bundle' => 'trusted_contact_request_pending',
-    'default_value' => NULL,
-    'deleted' => '0',
-    'description' => '',
-    'display' => array(
-      'default' => array(
-        'label' => 'above',
-        'module' => 'link',
-        'settings' => array(),
-        'type' => 'link_default',
-        'weight' => 1,
-      ),
-      'message_notify_email_body' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'message_notify_email_subject' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'message',
-    'field_name' => 'field_accept_link',
-    'label' => 'Accept link',
-    'required' => 1,
-    'settings' => array(
-      'attributes' => array(
-        'class' => '',
-        'configurable_title' => 0,
-        'rel' => '',
-        'target' => 'default',
-        'title' => '',
-      ),
-      'display' => array(
-        'url_cutoff' => '80',
-      ),
-      'enable_tokens' => 1,
-      'rel_remove' => 'default',
-      'title' => 'value',
-      'title_maxlength' => '128',
-      'title_value' => 'Accept',
-      'url' => 0,
-      'user_register_form' => FALSE,
-      'validate_url' => 1,
-    ),
-    'widget' => array(
-      'active' => 0,
-      'module' => 'link',
-      'settings' => array(),
-      'type' => 'link_field',
-      'weight' => '2',
-    ),
-  );
-
-  // Exported field_instance: 'message-trusted_contact_request_pending-field_ignore_link'
-  $field_instances['message-trusted_contact_request_pending-field_ignore_link'] = array(
-    'bundle' => 'trusted_contact_request_pending',
-    'default_value' => NULL,
-    'deleted' => '0',
-    'description' => '',
-    'display' => array(
-      'default' => array(
-        'label' => 'above',
-        'module' => 'link',
-        'settings' => array(),
-        'type' => 'link_default',
-        'weight' => 2,
-      ),
-      'message_notify_email_body' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'message_notify_email_subject' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'message',
-    'field_name' => 'field_ignore_link',
-    'label' => 'Ignore link',
-    'required' => 1,
-    'settings' => array(
-      'attributes' => array(
-        'class' => '',
-        'configurable_title' => 0,
-        'rel' => '',
-        'target' => 'default',
-        'title' => '',
-      ),
-      'display' => array(
-        'url_cutoff' => '80',
-      ),
-      'enable_tokens' => 1,
-      'rel_remove' => 'default',
-      'title' => 'value',
-      'title_maxlength' => '128',
-      'title_value' => 'Ignore',
-      'url' => 0,
-      'user_register_form' => FALSE,
-      'validate_url' => 1,
-    ),
-    'widget' => array(
-      'active' => 0,
-      'module' => 'link',
-      'settings' => array(),
-      'type' => 'link_field',
-      'weight' => '3',
-    ),
-  );
-
   // Exported field_instance: 'message-trusted_contact_request_pending-field_requesting_user'
   $field_instances['message-trusted_contact_request_pending-field_requesting_user'] = array(
     'bundle' => 'trusted_contact_request_pending',
@@ -632,6 +512,7 @@ function commons_groups_field_default_field_instances() {
 
   // Translatables
   // Included for use with string extractors like potx.
+  t('Approving user');
   t('Confirmation');
   t('Determine if this is an OG group.');
   t('Group');
@@ -641,6 +522,7 @@ function commons_groups_field_default_field_instances() {
   t('Group Logo');
   t('My request');
   t('Original OG Membership');
+  t('Requesting User');
   t('Response date');
   return $field_instances;
 }

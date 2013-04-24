@@ -90,9 +90,14 @@ function commons_groups_default_message_type() {
     "arguments" : null,
     "message_text" : { "und" : [
         {
-          "value" : "\\u003Cp\\u003E\\u003Cspan\\u003E[message:field-\\u003C\\/span\\u003E\\u003Cspan style=\\u0022font-size: 13px;\\u0022\\u003Eapproving\\u003C\\/span\\u003E\\u003Cspan\\u003E-user:field-name-first]\\u0026nbsp;[message:field-approving-user:field-name-last] accepted your Trusted-Contact request.\\u003C\\/span\\u003E\\u003C\\/p\\u003E\\r\\n",
-          "format" : "filtered_html",
-          "safe_value" : "\\u003Cp\\u003E[message:field-approving-user:field-name-first]\\u0026nbsp;[message:field-approving-user:field-name-last] accepted your Trusted-Contact request.\\u003C\\/p\\u003E"
+          "value" : "\\u003Cp\\u003E\\u003Cspan style=\\u0022font-size: 13px;\\u0022\\u003E[message:field-\\u003C\\/span\\u003E\\u003Cspan style=\\u0022font-size: 13px;\\u0022\\u003Eapproving\\u003C\\/span\\u003E\\u003Cspan style=\\u0022font-size: 13px;\\u0022\\u003E-user:field-name-first]\\u0026nbsp;[message:field-approving-user:field-name-last] approved your Trusted-Contact request.\\u003C\\/span\\u003E\\u003C\\/p\\u003E\\r\\n",
+          "format" : "full_html",
+          "safe_value" : "\\u003Cp\\u003E\\u003Cspan style=\\u0022font-size: 13px;\\u0022\\u003E[message:field-\\u003C\\/span\\u003E\\u003Cspan style=\\u0022font-size: 13px;\\u0022\\u003Eapproving\\u003C\\/span\\u003E\\u003Cspan style=\\u0022font-size: 13px;\\u0022\\u003E-user:field-name-first]\\u0026nbsp;[message:field-approving-user:field-name-last] approved your Trusted-Contact request.\\u003C\\/span\\u003E\\u003C\\/p\\u003E\\n"
+        },
+        {
+          "value" : "\\u003Cp\\u003EView their profile.. etc.\\u003C\\/p\\u003E\\r\\n",
+          "format" : "full_html",
+          "safe_value" : "\\u003Cp\\u003EView their profile.. etc.\\u003C\\/p\\u003E"
         }
       ]
     },
@@ -109,9 +114,14 @@ function commons_groups_default_message_type() {
     "arguments" : null,
     "message_text" : { "und" : [
         {
-          "value" : "\\u003Cp\\u003EYou have a Trusted-Contact request pending.\\u003C\\/p\\u003E\\r\\n\\r\\n\\u003Cp\\u003E[message:field-requesting-user:field-name-first] [message:field-requesting-user:field-name-last]\\u003C\\/p\\u003E\\r\\n\\r\\n\\u003Cp\\u003EYou may accept or ignore.\\u003C\\/p\\u003E\\r\\n\\r\\n\\u003Cp\\u003E[message:field_accept_link] \\u0026nbsp;|\\u0026nbsp;[message:field_ignore_link]\\u003C\\/p\\u003E\\r\\n\\r\\n\\u003Cp\\u003E\\u0026nbsp;\\u003C\\/p\\u003E\\r\\n",
-          "format" : "filtered_html",
-          "safe_value" : "\\u003Cp\\u003EYou have a Trusted-Contact request pending.\\u003C\\/p\\u003E\\n\\n\\u003Cp\\u003E[message:field-requesting-user:field-name-first] [message:field-requesting-user:field-name-last]\\u003C\\/p\\u003E\\n\\n\\u003Cp\\u003EYou may accept or ignore.\\u003C\\/p\\u003E\\n\\n\\u003Cp\\u003E[message:field_accept_link] \\u0026nbsp;|\\u0026nbsp;[message:field_ignore_link]\\u003C\\/p\\u003E\\n\\n\\u003Cp\\u003E\\u0026nbsp;\\u003C\\/p\\u003E"
+          "value" : "\\u003Cp\\u003EYou have a Trusted-Contact request pending from [message:field-requesting-user:field-name-first] [message:field-requesting-user:field-name-last]\\u003C\\/p\\u003E\\r\\n",
+          "format" : "full_html",
+          "safe_value" : "\\u003Cp\\u003EYou have a Trusted-Contact request pending from [message:field-requesting-user:field-name-first] [message:field-requesting-user:field-name-last]\\u003C\\/p\\u003E\\n"
+        },
+        {
+          "value" : "\\u003Cp\\u003EHello,\\u003C\\/p\\u003E\\r\\n\\r\\n\\u003Cp\\u003EYou may approve\\u0026nbsp;or ignore.\\u003C\\/p\\u003E\\r\\n\\r\\n\\u003Cp\\u003E@{approve-url} | \\u003Cspan\\u003E@{ignore-url}\\u003C\\/span\\u003E\\u003C\\/p\\u003E\\r\\n",
+          "format" : "full_html",
+          "safe_value" : "\\u003Cp\\u003EHello,\\u003C\\/p\\u003E\\n\\n\\u003Cp\\u003EYou may approve\\u0026nbsp;or ignore.\\u003C\\/p\\u003E\\n\\n\\u003Cp\\u003E@{approve-url} | @{ignore-url}\\u003C\\/p\\u003E"
         }
       ]
     },
