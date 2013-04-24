@@ -728,6 +728,7 @@ function commons_groups_request_trust($account) {
 
   $wrapper = entity_metadata_wrapper('og_membership', $og_membership);
   $wrapper->field_my_request->set(TRUE);
+  $wrapper->field_membership_token->set($token);
   $wrapper->save();
 
   $og_membership2 = og_group('user', $user, array('entity' => $account, 'field_name' => 'user_trusted_contacts' ,'state' => OG_STATE_PENDING));
@@ -772,9 +773,6 @@ function commons_groups_approve_trust($og_membership) {
   $wrapper->field_response_date->set(time());
   $wrapper->save();
 
-  // Get requesting user.
-  $account = user_load($og_membership->etid);
-
   // Set the other membership to Active too.
   $query = new EntityFieldQuery();
   $return = $query
@@ -791,6 +789,19 @@ function commons_groups_approve_trust($og_membership) {
   $wrapper->field_confirmation->set(1);
   $wrapper->field_response_date->set(time());
   $wrapper->save();
+
+  // Notify.
+
+  // Get approving user.
+  $account = user_load($og_membership->gid);
+
+  $message = message_create('trusted_contact_request_approved', array('uid' => $account->uid));
+
+  $wrapper = entity_metadata_wrapper('message', $message);
+  $wrapper->field_approving_user->set($account);
+  $wrapper->save();
+
+  message_notify_send_message($message);
 }
 
 function commons_groups_ignore_trust($og_membership) {
@@ -836,13 +847,13 @@ function commons_groups_un_trust_access($account, $token) {
 }
 
 function commons_groups_approve_trust_access($og_membership, $token) {
-  global $user;
+  $wrapper = entity_metadata_wrapper('og_membership', $og_membership);
 
-  return ($og_membership->field_membership_token == $token);
+  return ($wrapper->field_membership_token->value() == $token);
 }
 
 function commons_groups_ignore_trust_access($og_membership, $token) {
-  global $user;
+  $wrapper = entity_metadata_wrapper('og_membership', $og_membership);
 
-  return ($og_membership->field_membership_token == $token);
+  return ($wrapper->field_membership_token->value() == $token);
 }
