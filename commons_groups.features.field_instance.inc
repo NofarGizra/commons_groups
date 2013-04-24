@@ -382,6 +382,39 @@ function commons_groups_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'og_membership-trusted_contacts-field_membership_token'
+  $field_instances['og_membership-trusted_contacts-field_membership_token'] = array(
+    'bundle' => 'trusted_contacts',
+    'default_value' => NULL,
+    'deleted' => '0',
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 4,
+      ),
+    ),
+    'entity_type' => 'og_membership',
+    'field_name' => 'field_membership_token',
+    'label' => 'Membership Token',
+    'required' => 1,
+    'settings' => array(
+      'text_processing' => '0',
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'size' => '60',
+      ),
+      'type' => 'text_textfield',
+      'weight' => '5',
+    ),
+  );
 
   // Exported field_instance: 'og_membership-trusted_contacts-field_my_request'
   $field_instances['og_membership-trusted_contacts-field_my_request'] = array(
