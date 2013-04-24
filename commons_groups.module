@@ -44,15 +44,17 @@ function commons_groups_menu() {
     'type' => MENU_CALLBACK,
   );
 
-  $items['accept-trust/%user/%'] = array(
-    'page callback' => 'commons_groups_accept_trust',
+  $items['approve-trust/%entity_object/%'] = array(
+    'load arguments' => array('og_membership'),
+    'page callback' => 'commons_groups_approve_trust',
     'page arguments' => array(1),
-    'access callback' => 'commons_groups_accept_trust_access',
+    'access callback' => 'commons_groups_approve_trust_access',
     'access arguments'	=>	array(1,2),
     'type' => MENU_CALLBACK,
   );
 
-  $items['ignore-trust/%user/%'] = array(
+  $items['ignore-trust/%entity_object/%'] = array(
+    'load arguments' => array('og_membership'),
     'page callback' => 'commons_groups_ignore_trust',
     'page arguments' => array(1),
     'access callback' => 'commons_groups_ignore_trust_access',
@@ -714,17 +716,40 @@ function commons_groups_field_formatter_view($entity_type, $entity, $field, $ins
 function commons_groups_request_trust($account) {
   global $user;
 
+  if ($account->uid == $user->uid) {
+    // User cannot join his own group.
+    return;
+  }
+
+  $token = md5(substr(str_shuffle('12458cdefghrstuvwxABCWXYZ'), 0, 10) . rand(100000, 999999));
+
+  // @todo: Allow og_group() to return an un-saved OG-membership.
   $og_membership = og_group('user', $account, array('field_name' => 'user_trusted_contacts' ,'state' => OG_STATE_PENDING));
 
   $wrapper = entity_metadata_wrapper('og_membership', $og_membership);
-  $wrapper->field_my_request->set(1);
+  $wrapper->field_my_request->set(TRUE);
   $wrapper->save();
 
   $og_membership2 = og_group('user', $user, array('entity' => $account, 'field_name' => 'user_trusted_contacts' ,'state' => OG_STATE_PENDING));
 
   $wrapper = entity_metadata_wrapper('og_membership', $og_membership2);
   $wrapper->field_original_og_membership->set($og_membership);
+  $wrapper->field_membership_token->set($token);
   $wrapper->save();
+
+  // Notify.
+
+  $arguments = array(
+    '@{approve-url}' => 'approve-trust/' . $og_membership->id . '/' . $token,
+    '@{ignore-url}' => 'ignore-trust/' . $og_membership->id . '/' . $token,
+  );
+  $message = message_create('trusted_contact_request_pending', array('uid' => $account->uid, 'arguments' => $arguments));
+
+  $wrapper = entity_metadata_wrapper('message', $message);
+  $wrapper->field_requesting_user->set($user);
+  $wrapper->save();
+
+  message_notify_send_message($message);
 }
 
 function commons_groups_un_trust($account) {
@@ -733,43 +758,31 @@ function commons_groups_un_trust($account) {
   og_ungroup('user', $account->uid);
 }
 
-function commons_groups_accept_trust($account) {
+function commons_groups_approve_trust($og_membership) {
   global $user;
 
-  $query = new EntityFieldQuery();
-  $return = $query
-    ->entityCondition('entity_type', 'og_membership')
-    ->propertyCondition('group_type', 'user')
-    ->propertyCondition('entity_type', 'user')
-    ->propertyCondition('etid', $user->uid)
-    ->propertyCondition('gid', $account->uid)
-    ->execute();
-
-  if (empty($return['og_membership'])) {
-    // No such request.
+  if ($og_membership->gid != $user->uid) {
+    // User can only approve his requests.
     return;
   }
 
-  $membership_id = key($return['og_membership']);
-  $wrapper = entity_metadata_wrapper('og_membership', $membership_id);
-
-  if ($wrapper->field_my_request->value()) {
-    // User cannot accept his own request.
-    return;
-  }
-
+  $wrapper = entity_metadata_wrapper('og_membership', $og_membership);
   $wrapper->state->set(1);
   $wrapper->field_confirmation->set(1);
   $wrapper->field_response_date->set(time());
   $wrapper->save();
 
+  // Get requesting user.
+  $account = user_load($og_membership->etid);
+
+  // Set the other membership to Active too.
   $query = new EntityFieldQuery();
   $return = $query
     ->entityCondition('entity_type', 'og_membership')
     ->propertyCondition('group_type', 'user')
     ->propertyCondition('entity_type', 'user')
-    ->propertyCondition('etid', $account->uid)
-    ->propertyCondition('gid', $user->uid)
+    ->propertyCondition('etid', $og_membership->gid)
+    ->propertyCondition('gid', $og_membership->etid)
     ->execute();
   $membership_id = key($return['og_membership']);
 
@@ -780,42 +793,27 @@ function commons_groups_accept_trust($account) {
   $wrapper->save();
 }
 
-function commons_groups_ignore_trust($account) {
+function commons_groups_ignore_trust($og_membership) {
   global $user;
 
-  $query = new EntityFieldQuery();
-  $return = $query
-    ->entityCondition('entity_type', 'og_membership')
-    ->propertyCondition('group_type', 'user')
-    ->propertyCondition('entity_type', 'user')
-    ->propertyCondition('etid', $user->uid)
-    ->propertyCondition('gid', $account->uid)
-    ->execute();
-
-  if (empty($return['og_membership'])) {
-    // No such request.
+  if ($og_membership->gid != $user->uid) {
+    // User can only ignore his requests.
     return;
   }
 
-  $membership_id = key($return['og_membership']);
-  $wrapper = entity_metadata_wrapper('og_membership', $membership_id);
-
-  if ($wrapper->field_my_request->value()) {
-    // User cannot ignore his own request.
-    return;
-  }
-
+  $wrapper = entity_metadata_wrapper('og_membership', $og_membership);
   $wrapper->state->set(3);
   $wrapper->field_response_date->set(time());
   $wrapper->save();
 
+  // Set the other membership to Blocked too.
   $query = new EntityFieldQuery();
   $return = $query
     ->entityCondition('entity_type', 'og_membership')
     ->propertyCondition('group_type', 'user')
     ->propertyCondition('entity_type', 'user')
-    ->propertyCondition('etid', $account->uid)
-    ->propertyCondition('gid', $user->uid)
+    ->propertyCondition('etid', $og_membership->gid)
+    ->propertyCondition('gid', $og_membership->etid)
     ->execute();
   $membership_id = key($return['og_membership']);
 
@@ -823,8 +821,6 @@ function commons_groups_ignore_trust($account) {
   $wrapper->state->set(3);
   $wrapper->field_response_date->set(time());
   $wrapper->save();
-
-  dpm($wrapper->state->label());
 }
 
 function commons_groups_request_trust_access($account, $token) {
@@ -839,14 +835,14 @@ function commons_groups_un_trust_access($account, $token) {
   return drupal_valid_token($token, 'un' . ':' . $account->uid . ':' . $user->uid);
 }
 
-function commons_groups_accept_trust_access($account, $token) {
+function commons_groups_approve_trust_access($og_membership, $token) {
   global $user;
 
-  return drupal_valid_token($token, 'accept' . ':' . $account->uid . ':' . $user->uid);
+  return ($og_membership->field_membership_token == $token);
 }
 
-function commons_groups_ignore_trust_access($account, $token) {
+function commons_groups_ignore_trust_access($og_membership, $token) {
   global $user;
 
-  return drupal_valid_token($token, 'ignore' . ':' . $account->uid . ':' . $user->uid);
+  return ($og_membership->field_membership_token == $token);
 }
