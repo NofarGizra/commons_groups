@@ -73,7 +73,18 @@ function commons_groups_menu_alter(&$items) {
   if (isset($items['node/%/group'])) {
     $items['node/%/group']['title'] = t('Administer group');
   }
+
+  $items['messages/new']['access callback'] = 'commons_groups_privatemsg_write_access';
+  $items['messages/new']['access arguments'] = 2;
 }
+
+/**
+ * Access callback.
+ */
+function commons_groups_privatemsg_write_access($uid) {
+  return (privatemsg_user_access('write privatemsg') && commons_group_is_trusted_contact($uid));
+}
+
 /**
  * Implements hook_block_info().
  */
@@ -645,12 +656,8 @@ function commons_groups_field_formatter_view($entity_type, $entity, $field, $ins
 
       list($id,, $bundle) = entity_extract_ids($entity_type, $entity);
       if (og_is_member($entity_type, $id, 'user', $account, array(OG_STATE_ACTIVE))) {
-        if (og_user_access($entity_type, $id, 'unsubscribe', $account)) {
-          $links['title'] = t('Un-Trust');
-          $token = drupal_get_token('un' . ':' . $id . ':' . $account->uid);
-          $links['href'] = "un-trust/$id/$token/nojs";
-          $links['options'] = array('attributes' => array('class' => array('use-ajax')));
-        }
+        $links['title'] = t('Message');
+        $links['href'] = "messages/new/$id";
       }
       else
         if (og_is_member($entity_type, $id, 'user', $account, array(OG_STATE_PENDING))) {
@@ -806,8 +813,8 @@ function commons_groups_approve_trust($og_membership) {
   }
 
   $wrapper = entity_metadata_wrapper('og_membership', $og_membership);
-  $wrapper->state->set(1);
-  $wrapper->field_confirmation->set(1);
+  $wrapper->state->set(OG_STATE_ACTIVE);
+  $wrapper->field_confirmation->set(TRUE);
   $wrapper->field_response_date->set(time());
   $wrapper->save();
 
@@ -823,8 +830,8 @@ function commons_groups_approve_trust($og_membership) {
   $membership_id = key($return['og_membership']);
 
   $wrapper = entity_metadata_wrapper('og_membership', $membership_id);
-  $wrapper->state->set(1);
-  $wrapper->field_confirmation->set(1);
+  $wrapper->state->set(OG_STATE_ACTIVE);
+  $wrapper->field_confirmation->set(TRUE);
   $wrapper->field_response_date->set(time());
   $wrapper->save();
 
@@ -851,7 +858,7 @@ function commons_groups_ignore_trust($og_membership) {
   }
 
   $wrapper = entity_metadata_wrapper('og_membership', $og_membership);
-  $wrapper->state->set(3);
+  $wrapper->state->set(OG_STATE_BLOCKED);
   $wrapper->field_response_date->set(time());
   $wrapper->save();
 
@@ -867,7 +874,7 @@ function commons_groups_ignore_trust($og_membership) {
   $membership_id = key($return['og_membership']);
 
   $wrapper = entity_metadata_wrapper('og_membership', $membership_id);
-  $wrapper->state->set(3);
+  $wrapper->state->set(OG_STATE_BLOCKED);
   $wrapper->field_response_date->set(time());
   $wrapper->save();
 }
@@ -894,4 +901,22 @@ function commons_groups_ignore_trust_access($og_membership, $token) {
   $wrapper = entity_metadata_wrapper('og_membership', $og_membership);
 
   return ($wrapper->field_membership_token->value() == $token);
+}
+
+/**
+ * Returns whether or not two users are trusted contacts.
+ *
+ * @param $uid
+ *    User ID.
+ *
+ * @param $uid2
+ *    Optional; Other user's object. If not provided, current user will be used.
+ */
+function commons_group_is_trusted_contact($uid, $account = NULL) {
+  if (empty($account)) {
+    global $user;
+    $account = $user;
+  }
+
+  return og_is_member('user', $uid, 'user', $account, array(OG_STATE_ACTIVE));
 }
