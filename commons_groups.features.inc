@@ -97,7 +97,7 @@ function commons_groups_default_message_type() {
         {
           "value" : "\\u003Cp\\u003EView their profile.. etc.\\u003C\\/p\\u003E\\r\\n",
           "format" : "full_html",
-          "safe_value" : "\\u003Cp\\u003EView their profile.. etc.\\u003C\\/p\\u003E"
+          "safe_value" : "\\u003Cp\\u003EView their profile.. etc.\\u003C\\/p\\u003E\\n"
         }
       ]
     },
@@ -121,7 +121,7 @@ function commons_groups_default_message_type() {
         {
           "value" : "\\u003Cp\\u003EHello,\\u003C\\/p\\u003E\\r\\n\\r\\n\\u003Cp\\u003EYou may approve\\u0026nbsp;or ignore.\\u003C\\/p\\u003E\\r\\n\\r\\n\\u003Cp\\u003E@{approve-url} | \\u003Cspan\\u003E@{ignore-url}\\u003C\\/span\\u003E\\u003C\\/p\\u003E\\r\\n",
           "format" : "full_html",
-          "safe_value" : "\\u003Cp\\u003EHello,\\u003C\\/p\\u003E\\n\\n\\u003Cp\\u003EYou may approve\\u0026nbsp;or ignore.\\u003C\\/p\\u003E\\n\\n\\u003Cp\\u003E@{approve-url} | @{ignore-url}\\u003C\\/p\\u003E"
+          "safe_value" : "\\u003Cp\\u003EHello,\\u003C\\/p\\u003E\\n\\n\\u003Cp\\u003EYou may approve\\u0026nbsp;or ignore.\\u003C\\/p\\u003E\\n\\n\\u003Cp\\u003E@{approve-url} | \\u003Cspan\\u003E@{ignore-url}\\u003C\\/span\\u003E\\u003C\\/p\\u003E\\n"
         }
       ]
     },

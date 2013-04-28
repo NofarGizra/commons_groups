@@ -6,7 +6,6 @@
 
 include_once 'commons_groups.features.inc';
 
-
 /**
  * Implements hook_entity_view().
  */
@@ -44,21 +43,21 @@ function commons_groups_menu() {
     'type' => MENU_CALLBACK,
   );
 
-  $items['approve-trust/%entity_object/%'] = array(
+  $items['approve-trust/%entity_object/%/%'] = array(
     'load arguments' => array('og_membership'),
     'page callback' => 'commons_groups_approve_trust',
-    'page arguments' => array(1),
+    'page arguments' => array(1, 3),
     'access callback' => 'commons_groups_approve_trust_access',
-    'access arguments'	=>	array(1,2),
+    'access arguments'	=>	array(1, 2),
     'type' => MENU_CALLBACK,
   );
 
-  $items['ignore-trust/%entity_object/%'] = array(
+  $items['ignore-trust/%entity_object/%/%'] = array(
     'load arguments' => array('og_membership'),
     'page callback' => 'commons_groups_ignore_trust',
-    'page arguments' => array(1),
+    'page arguments' => array(1, 3),
     'access callback' => 'commons_groups_ignore_trust_access',
-    'access arguments'	=>	array(1,2),
+    'access arguments'	=>	array(1, 2),
     'type' => MENU_CALLBACK,
   );
 
@@ -75,14 +74,7 @@ function commons_groups_menu_alter(&$items) {
   }
 
   $items['messages/new']['access callback'] = 'commons_groups_privatemsg_write_access';
-  $items['messages/new']['access arguments'] = 2;
-}
-
-/**
- * Access callback.
- */
-function commons_groups_privatemsg_write_access($uid) {
-  return (privatemsg_user_access('write privatemsg') && commons_group_is_trusted_contact($uid));
+  $items['messages/new']['access arguments'] = array(2);
 }
 
 /**
@@ -631,6 +623,10 @@ function commons_groups_field_formatter_info() {
         'field_name' => FALSE,
       ),
     ),
+    'accept_ignore' => array(
+      'label' => t('Accept Ignore'),
+      'field types' => array('text', 'text_long'),
+    ),
   );
 }
 
@@ -668,53 +664,53 @@ function commons_groups_field_formatter_view($entity_type, $entity, $field, $ins
           );
           return $element;
         }
-      else {
-        if (og_is_member($entity_type, $id, 'user', $account, array(OG_STATE_BLOCKED))) {
-          // If user is blocked, they should not be able to apply for
-          // membership.
-          return;
-        }
-
-        // Check if user can subscribe to the field.
-        if (empty($settings['field_name']) && $audience_field_name = og_get_best_group_audience_field('user', $account, $entity_type, $bundle)) {
-          $settings['field_name'] = $audience_field_name;
-        }
-        if (!$settings['field_name']) {
-          return;
-        }
-
-        $field_info = field_info_field($settings['field_name']);
-
-        // Check if entity is referencable.
-        if ($field_info['settings']['target_type'] != $entity_type) {
-          // Group type doesn't match.
-          return;
-        }
-        if (!empty($field_info['settings']['handler_settings']['target_bundles']) && !in_array($bundle, $field_info['settings']['handler_settings']['target_bundles'])) {
-          // Bundles don't match.
-          return;
-        }
-
-        if (!og_check_field_cardinality('user', $account, $settings['field_name'])) {
-          // @todo: Is there a limit?
-          $element[0] = array('#markup' => format_plural($field_info['cardinality'], 'You are already registered to another group', 'You are already registered to @count groups'));
-          return $element;
-        }
-
-        $token = drupal_get_token('request' . ':' . $id . ':' . $account->uid);
-        $url = "request-trust/$id/$token/nojs";
-
-        $links['title'] = t('Trusted Contact');
-        if ($account->uid) {
-          $links['href'] = $url;
-          $links['options'] = array('attributes' => array('class' => array('use-ajax')));
-        }
         else {
-          // @todo: Is this ok?
-          $links['href'] = 'user/login';
-          $links['options'] = array('query' => array('destination' => $url));
+          if (og_is_member($entity_type, $id, 'user', $account, array(OG_STATE_BLOCKED))) {
+            // If user is blocked, they should not be able to apply for
+            // membership.
+            return;
+          }
+
+          // Check if user can subscribe to the field.
+          if (empty($settings['field_name']) && $audience_field_name = og_get_best_group_audience_field('user', $account, $entity_type, $bundle)) {
+            $settings['field_name'] = $audience_field_name;
+          }
+          if (!$settings['field_name']) {
+            return;
+          }
+
+          $field_info = field_info_field($settings['field_name']);
+
+          // Check if entity is referencable.
+          if ($field_info['settings']['target_type'] != $entity_type) {
+            // Group type doesn't match.
+            return;
+          }
+          if (!empty($field_info['settings']['handler_settings']['target_bundles']) && !in_array($bundle, $field_info['settings']['handler_settings']['target_bundles'])) {
+            // Bundles don't match.
+            return;
+          }
+
+          if (!og_check_field_cardinality('user', $account, $settings['field_name'])) {
+            // @todo: Is there a limit?
+            $element[0] = array('#markup' => format_plural($field_info['cardinality'], 'You are already registered to another group', 'You are already registered to @count groups'));
+            return $element;
+          }
+
+          $token = drupal_get_token('request' . ':' . $id . ':' . $account->uid);
+          $url = "request-trust/$id/$token/nojs";
+
+          $links['title'] = t('Trusted Contact');
+          if ($account->uid) {
+            $links['href'] = $url;
+            $links['options'] = array('attributes' => array('class' => array('use-ajax')));
+          }
+          else {
+            // @todo: Is this ok?
+            $links['href'] = 'user/login';
+            $links['options'] = array('query' => array('destination' => $url));
+          }
         }
-      }
 
       if (!empty($links['title'])) {
         $links += array('options' => array());
@@ -727,6 +723,18 @@ function commons_groups_field_formatter_view($entity_type, $entity, $field, $ins
         return $element;
       }
       // User didn't have permissions.
+      break;
+
+    case 'accept_ignore':
+
+      $approve = l('Approve', 'approve-trust/' . $entity->id . '/' . $items[0]['safe_value'] .'/nojs', array('attributes' => array('class' => array('use-ajax'))));
+      $ignore = l('Ignore', 'ignore-trust/' . $entity->id . '/' . $items[0]['safe_value'] .'/nojs', array('attributes' => array('class' => array('use-ajax'))));
+
+      $element[0] = array(
+        '#markup' =>  "$approve $ignore",
+      );
+      return $element;
+
       break;
   }
 }
@@ -804,7 +812,7 @@ function commons_groups_un_trust($account, $ajax) {
   }
 }
 
-function commons_groups_approve_trust($og_membership) {
+function commons_groups_approve_trust($og_membership, $ajax = 'nojs') {
   global $user;
 
   if ($og_membership->gid != $user->uid) {
@@ -849,7 +857,7 @@ function commons_groups_approve_trust($og_membership) {
   message_notify_send_message($message);
 }
 
-function commons_groups_ignore_trust($og_membership) {
+function commons_groups_ignore_trust($og_membership, $ajax = 'nojs') {
   global $user;
 
   if ($og_membership->gid != $user->uid) {
@@ -919,4 +927,18 @@ function commons_group_is_trusted_contact($uid, $account = NULL) {
   }
 
   return og_is_member('user', $uid, 'user', $account, array(OG_STATE_ACTIVE));
+}
+
+/**
+ * Access callback.
+ */
+function commons_groups_privatemsg_write_access($uid) {
+  return (privatemsg_user_access('write privatemsg') && commons_group_is_trusted_contact($uid));
+}
+
+/**
+ * Implement hook_form_FORM_alter().
+ */
+function commons_groups_form_privatemsg_new_alter(&$form, &$form_state) {
+  $form['body']['#format'] = 'plain_text';
 }
