@@ -1224,7 +1224,7 @@ function commons_groups_views_default_views() {
 
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page');
-  $handler->display->display_options['path'] = 'trusted-contacts';
+  $handler->display->display_options['path'] = 'contacts';
   $export['trusted_contacts'] = $view;
 
   $view = new view();
@@ -1277,7 +1277,7 @@ function commons_groups_views_default_views() {
   $handler->display->display_options['fields']['field_membership_token']['field'] = 'field_membership_token';
   $handler->display->display_options['fields']['field_membership_token']['label'] = '';
   $handler->display->display_options['fields']['field_membership_token']['element_label_colon'] = FALSE;
-  $handler->display->display_options['fields']['field_membership_token']['type'] = 'accept_ignore';
+  $handler->display->display_options['fields']['field_membership_token']['type'] = 'approve_ignore';
   /* Field: OG membership: Created */
   $handler->display->display_options['fields']['created']['id'] = 'created';
   $handler->display->display_options['fields']['created']['table'] = 'og_membership';
@@ -1319,7 +1319,7 @@ function commons_groups_views_default_views() {
 
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page');
-  $handler->display->display_options['path'] = 'trusted-contacts-invitations';
+  $handler->display->display_options['path'] = 'contacts/invitations';
   $export['trusted_contacts_invitations'] = $view;
 
   return $export;

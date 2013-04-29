@@ -623,9 +623,9 @@ function commons_groups_field_formatter_info() {
         'field_name' => FALSE,
       ),
     ),
-    'accept_ignore' => array(
-      'label' => t('Accept Ignore'),
-      'field types' => array('text', 'text_long'),
+    'approve_ignore' => array(
+      'label' => t('Approve Ignore'),
+      'field types' => array('text'),
     ),
   );
 }
@@ -725,10 +725,10 @@ function commons_groups_field_formatter_view($entity_type, $entity, $field, $ins
       // User didn't have permissions.
       break;
 
-    case 'accept_ignore':
+    case 'approve_ignore':
 
-      $approve = l('Approve', 'approve-trust/' . $entity->id . '/' . $items[0]['safe_value'] .'/nojs', array('attributes' => array('class' => array('use-ajax'))));
-      $ignore = l('Ignore', 'ignore-trust/' . $entity->id . '/' . $items[0]['safe_value'] .'/nojs', array('attributes' => array('class' => array('use-ajax'))));
+      $approve = l('Approve', 'approve-trust/' . $entity->id . '/' . $items[0]['value']);
+      $ignore = l('Ignore', 'ignore-trust/' . $entity->id . '/' . $items[0]['value']);
 
       $element[0] = array(
         '#markup' =>  "$approve $ignore",
@@ -857,7 +857,7 @@ function commons_groups_approve_trust($og_membership) {
   message_notify_send_message($message);
 
   // Redirect to Invitations screen.
-  drupal_goto('trusted-contacts-invitations');
+  drupal_goto('contacts/invitations');
 }
 
 function commons_groups_ignore_trust($og_membership) {
@@ -890,7 +890,7 @@ function commons_groups_ignore_trust($og_membership) {
   $wrapper->save();
 
   // Redirect to Invitations screen.
-  drupal_goto('trusted-contacts-invitations');
+  drupal_goto('contacts/invitations');
 }
 
 function commons_groups_request_trust_access($account, $token) {
@@ -947,4 +947,50 @@ function commons_groups_privatemsg_write_access($uid) {
  */
 function commons_groups_form_privatemsg_new_alter(&$form, &$form_state) {
   $form['body']['#format'] = 'plain_text';
+}
+
+/**
+ * Implements hook_action_info().
+ *
+ * @see views_bulk_operations_action_info()
+ */
+function commons_groups_action_info() {
+  $actions = array();
+  $files = commons_groups_operations_load_action_includes();
+  foreach ($files as $filename) {
+    $action_info_fn = 'commons_groups_'. str_replace('.', '_', basename($filename, '.inc')).'_info';
+    $action_info = call_user_func($action_info_fn);
+    if (is_array($action_info)) {
+      $actions += $action_info;
+    }
+  }
+
+  return $actions;
+}
+
+/**
+ * Loads the VBO actions placed in their own include files.
+ *
+ * @return
+ *   An array of containing filenames of the included actions.
+ *
+ * @see views_bulk_operations_load_action_includes()
+ */
+function commons_groups_operations_load_action_includes() {
+  static $loaded = FALSE;
+
+  $path = drupal_get_path('module', 'commons_groups') . '/includes/actions/';
+  $files = array(
+    'set_state_active.action.inc',
+    'set_state_blocked.action.inc',
+  );
+
+  if (!$loaded) {
+    foreach ($files as $file) {
+      include_once $path . $file;
+    }
+    $loaded = TRUE;
+  }
+
+  return $files;
 }
