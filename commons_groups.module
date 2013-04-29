@@ -43,19 +43,19 @@ function commons_groups_menu() {
     'type' => MENU_CALLBACK,
   );
 
-  $items['approve-trust/%entity_object/%/%'] = array(
+  $items['approve-trust/%entity_object/%'] = array(
     'load arguments' => array('og_membership'),
     'page callback' => 'commons_groups_approve_trust',
-    'page arguments' => array(1, 3),
+    'page arguments' => array(1),
     'access callback' => 'commons_groups_approve_trust_access',
     'access arguments'	=>	array(1, 2),
     'type' => MENU_CALLBACK,
   );
 
-  $items['ignore-trust/%entity_object/%/%'] = array(
+  $items['ignore-trust/%entity_object/%'] = array(
     'load arguments' => array('og_membership'),
     'page callback' => 'commons_groups_ignore_trust',
-    'page arguments' => array(1, 3),
+    'page arguments' => array(1),
     'access callback' => 'commons_groups_ignore_trust_access',
     'access arguments'	=>	array(1, 2),
     'type' => MENU_CALLBACK,
@@ -812,7 +812,7 @@ function commons_groups_un_trust($account, $ajax) {
   }
 }
 
-function commons_groups_approve_trust($og_membership, $ajax = 'nojs') {
+function commons_groups_approve_trust($og_membership) {
   global $user;
 
   if ($og_membership->gid != $user->uid) {
@@ -855,9 +855,12 @@ function commons_groups_approve_trust($og_membership, $ajax = 'nojs') {
   $wrapper->save();
 
   message_notify_send_message($message);
+
+  // Redirect to Invitations screen.
+  drupal_goto('trusted-contacts-invitations');
 }
 
-function commons_groups_ignore_trust($og_membership, $ajax = 'nojs') {
+function commons_groups_ignore_trust($og_membership) {
   global $user;
 
   if ($og_membership->gid != $user->uid) {
@@ -885,6 +888,9 @@ function commons_groups_ignore_trust($og_membership, $ajax = 'nojs') {
   $wrapper->state->set(OG_STATE_BLOCKED);
   $wrapper->field_response_date->set(time());
   $wrapper->save();
+
+  // Redirect to Invitations screen.
+  drupal_goto('trusted-contacts-invitations');
 }
 
 function commons_groups_request_trust_access($account, $token) {
