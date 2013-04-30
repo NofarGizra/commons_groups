@@ -24,6 +24,9 @@ function commons_groups_entity_view($entity, $type, $view_mode, $langcode) {
   }
 }
 
+/**
+ * Implements hook_menu().
+ */
 function commons_groups_menu() {
   $items = array();
 
@@ -31,7 +34,7 @@ function commons_groups_menu() {
     'page callback' => 'commons_groups_request_trust',
     'page arguments' => array(1, 3),
     'access callback' => 'commons_groups_request_trust_access',
-    'access arguments'	=>	array(1,2),
+    'access arguments' => array(1,2),
     'type' => MENU_CALLBACK,
   );
 
@@ -39,7 +42,7 @@ function commons_groups_menu() {
     'page callback' => 'commons_groups_un_trust',
     'page arguments' => array(1, 3),
     'access callback' => 'commons_groups_un_trust_access',
-    'access arguments'	=>	array(1,2),
+    'access arguments' => array(1,2),
     'type' => MENU_CALLBACK,
   );
 
@@ -48,7 +51,7 @@ function commons_groups_menu() {
     'page callback' => 'commons_groups_approve_trust',
     'page arguments' => array(1),
     'access callback' => 'commons_groups_approve_trust_access',
-    'access arguments'	=>	array(1, 2),
+    'access arguments' => array(1, 2),
     'type' => MENU_CALLBACK,
   );
 
@@ -57,7 +60,7 @@ function commons_groups_menu() {
     'page callback' => 'commons_groups_ignore_trust',
     'page arguments' => array(1),
     'access callback' => 'commons_groups_ignore_trust_access',
-    'access arguments'	=>	array(1, 2),
+    'access arguments' => array(1, 2),
     'type' => MENU_CALLBACK,
   );
 
@@ -154,7 +157,6 @@ function commons_groups_commons_entity_integration() {
   );
 }
 
-
 function commons_groups_group_contributors_count_topics($group) {
 
   // Format the count of contributors.
@@ -196,7 +198,11 @@ function commons_groups_group_contributors_count_topics($group) {
   return $output;
 }
 
-/* set commons_Groups form alter to happen after views bulk operations */
+/**
+ * Implement hook_module_implements_alter().
+ *
+ * Set commons_Groups form alter to happen after views bulk operations.
+ */
 function commons_groups_module_implements_alter(&$implementations, $hook) {
   if ($hook == 'form_alter') {
     $group = $implementations['commons_groups'];
@@ -204,9 +210,10 @@ function commons_groups_module_implements_alter(&$implementations, $hook) {
     $implementations['commons_groups'] = $group;
   }
 }
+
 /**
-* Implements hook_form_alter().
-*/
+ * Implements hook_form_alter().
+ */
 function commons_groups_form_alter(&$form, &$form_state, $form_id) {
   if($form_id == 'views_exposed_form' && strstr($form['#id'], 'views-exposed-form-commons-groups-directory')) {
     $form['groups-keys']['#attributes'] = array(
@@ -249,7 +256,7 @@ function commons_groups_form_alter(&$form, &$form_state, $form_id) {
 }
 
 /**
- * Submit handler called if the form is for a node enabled as group content.
+ * Submit handler; Called if the form is for a node enabled as group content.
  */
 function commons_groups_node_in_group_submit(&$form, &$form_state) {
   if (isset($form_state['values']['og_group_ref'][LANGUAGE_NONE][0])) {
@@ -257,6 +264,7 @@ function commons_groups_node_in_group_submit(&$form, &$form_state) {
     $form_state['redirect'] = 'node/' . $group;
   }
 }
+
 /**
 * Implements hook_system_info_alter().
 */
@@ -351,7 +359,6 @@ function commons_groups_token_info() {
     'tokens' => $tokens,
   );
 }
-
 
 /**
  * Implements hook_tokens().
@@ -494,8 +501,8 @@ function commons_groups_entityreference_default_value($entity_type, $entity, $fi
 }
 
 /**
-* Implements hook_strongarm_alter().
-*/
+ * Implements hook_strongarm_alter().
+ */
  function commons_groups_strongarm_alter(&$items) {
   // Expose the Group content type for integration with Commons Radioactivity.
   if (isset($items['commons_radioactivity_entity_types'])) {
@@ -513,24 +520,24 @@ function commons_groups_default_rules_configuration_alter(&$configs) {
 }
 
 /**
-* Implements hook_node_update().
-*/
+ * Implements hook_node_update().
+ */
 function commons_groups_node_update($node) {
   $account = user_load($node->uid);
   commons_groups_first_contribution($account, $node);
 }
 
 /**
-* Implements hook_node_insert().
-*/
+ * Implements hook_node_insert().
+ */
 function commons_groups_node_insert($node) {
   $account = user_load($node->uid);
   commons_groups_first_contribution($account, $node);
 }
 
 /**
-* Returns an array of entity types that are enabled via Commons Groups.
-*/
+ * Returns an array of entity types that are enabled via Commons Groups.
+ */
 function commons_groups_get_group_content_entity_types() {
   // Find all Commons Entity integrations.
   $commons_entity_integrations = module_invoke_all('commons_entity_integration');
@@ -555,9 +562,9 @@ function commons_groups_get_group_content_entity_types() {
 }
 
 /**
-* When a user first creates content within a group,
-* grant her the contributor role within that group.
-*/
+ * When a user first creates content within a group,
+ * grant her the contributor role within that group.
+ */
 function commons_groups_first_contribution($account, $node) {
   // Find the groups that this piece of content belongs to.
   $groups = og_get_entity_groups('node', $node);
@@ -584,8 +591,8 @@ function commons_groups_first_contribution($account, $node) {
 }
 
 /**
-* Implements hook_commons_bw_group_widget().
-*/
+ * Implements hook_commons_bw_group_widget().
+ */
 function commons_groups_commons_bw_group_widget() {
   return array(
     'commons_all' => array(
@@ -727,8 +734,8 @@ function commons_groups_field_formatter_view($entity_type, $entity, $field, $ins
 
     case 'approve_ignore':
 
-      $approve = l('Approve', 'approve-trust/' . $entity->id . '/' . $items[0]['value']);
-      $ignore = l('Ignore', 'ignore-trust/' . $entity->id . '/' . $items[0]['value']);
+      $approve = l(t('Approve'), 'approve-trust/' . $entity->id . '/' . $items[0]['value']);
+      $ignore = l(t('Ignore'), 'ignore-trust/' . $entity->id . '/' . $items[0]['value']);
 
       $element[0] = array(
         '#markup' =>  "$approve $ignore",
@@ -741,19 +748,22 @@ function commons_groups_field_formatter_view($entity_type, $entity, $field, $ins
 
 /**
  * Implements hook_og_membership_insert().
- *
- * @param OgMembership $og_membership
  */
 function commons_groups_og_membership_insert(OgMembership $og_membership) {
   if ($og_membership->type != 'trusted_contacts' || $og_membership->group_type != 'user') {
+    // Not a Trusted-Contact membership type.
     return;
   }
 
   if (!empty($og_membership->_skip_membership_insert)) {
+    // Prevent recursion.
     return;
   }
 
-  $token = md5(substr(str_shuffle('12458cdefghrstuvwxABCWXYZ'), 0, 10) . rand(100000, 999999));
+  // We're using a custom token because Drupal provides a token that relies on
+  // logged-in user, and here we want the token to be used by the responding
+  // user when approving/ignoring the logged-in user's request.
+  $token = md5(rand(100000000, 9999999999));
 
   $wrapper = entity_metadata_wrapper('og_membership', $og_membership);
   $wrapper->field_my_request->set(1);
@@ -764,6 +774,8 @@ function commons_groups_og_membership_insert(OgMembership $og_membership) {
     'field_name' => 'user_trusted_contacts',
     'state' => $og_membership->state,
   );
+
+  // Get a non-saved OG Membership object.
   $og_membership2 = og_group('user', $og_membership->etid, $values, FALSE);
 
   $wrapper2 = entity_metadata_wrapper('og_membership', $og_membership2);
@@ -776,7 +788,7 @@ function commons_groups_og_membership_insert(OgMembership $og_membership) {
   $wrapper2->save();
 
 
-  // Make sure OG membership is updated.
+  // Make sure OG membership is updated, and not re-inserted.
   unset($og_membership->is_new);
 
   $wrapper->save();
@@ -784,15 +796,15 @@ function commons_groups_og_membership_insert(OgMembership $og_membership) {
 
 /**
  * Implements hook_og_membership_update().
- *
- * @param OgMembership $og_membership
  */
 function commons_groups_og_membership_update(OgMembership $og_membership) {
   if ($og_membership->type != 'trusted_contacts' || $og_membership->group_type != 'user') {
+    // Not a Trusted-Contact membership type.
     return;
   }
 
   if (!empty($og_membership->_skip_membership_update)) {
+    // Prevent recursion.
     return;
   }
 
@@ -848,16 +860,12 @@ function commons_groups_og_membership_update(OgMembership $og_membership) {
   $wrapper2->save();
 }
 
-
 /**
  * Implements hook_og_membership_delete().
- *
- * @param OgMembership $og_membership
- *
- * @param $type
  */
 function commons_groups_og_membership_delete(OgMembership $og_membership, $type) {
   if ($og_membership->type != 'trusted_contacts' || $og_membership->group_type != 'user') {
+    // Not a Trusted-Contact membership type.
     return;
   }
 
@@ -870,11 +878,18 @@ function commons_groups_og_membership_delete(OgMembership $og_membership, $type)
   og_ungroup('user', $og_membership->etid, 'user', $og_membership->gid);
 }
 
+/**
+ * Menu callback; Creates a Trusted-Contact Invitation by adding two users to
+ * each-other's groups, and setting the memberships' states to 'Pending'.
+ *
+ * @param $account
+ *    The group in which the logged-in user wants to join.
+ */
 function commons_groups_request_trust($account, $ajax) {
   global $user;
 
   if ($account->uid == $user->uid) {
-    // User cannot join his own group.
+    // Users cannot join their own group.
     return;
   }
 
@@ -883,9 +898,12 @@ function commons_groups_request_trust($account, $ajax) {
 
   // Notify.
 
+  $wrapper = entity_metadata_wrapper('og_membership', $og_membership);
+  $token = $wrapper->field_membership_token->value();
+
   $arguments = array(
-    '@{approve-url}' => l('Approve', 'approve-trust/' . $og_membership->id . '/' . $token),
-    '@{ignore-url}' => l('Ignore', 'ignore-trust/' . $og_membership->id . '/' . $token),
+    '@{approve-url}' => 'approve-trust/' . $og_membership->id . '/' . $token,
+    '@{ignore-url}' => 'ignore-trust/' . $og_membership->id . '/' . $token,
   );
   $message = message_create('trusted_contact_request_pending', array('uid' => $account->uid, 'arguments' => $arguments));
 
@@ -908,10 +926,18 @@ function commons_groups_request_trust($account, $ajax) {
   }
 }
 
+/**
+ * Menu callback; "Breaks" a Trusted-Contact relation between two users by
+ * ungrouping each of them from the other's group.
+ *
+ * @param $account
+ *    The account which the logged-in user wants to break contact with.
+ */
 function commons_groups_un_trust($account, $ajax) {
   global $user;
 
-  // This actually deletes 2 OG memberships - one for each user.
+  // This actually deletes 2 OG memberships, one for each user,
+  // in commons_groups_og_membership_delete().
   og_ungroup('user', $account->uid);
 
   // Ajax
@@ -930,11 +956,19 @@ function commons_groups_un_trust($account, $ajax) {
   }
 }
 
+/**
+ * Menu callback; Approving a Trusted-Contact Invitation by setting each user's
+ * membership state to 'Active'.
+ *
+ * @param $og_membership
+ *    The membership in which the logged-in user is the group and the requesting
+ *    user is the member.
+ */
 function commons_groups_approve_trust(OgMembership $og_membership) {
   global $user;
 
   if ($og_membership->gid != $user->uid) {
-    // User can only approve his requests.
+    // Users can only approve their requests.
     return;
   }
 
@@ -960,11 +994,19 @@ function commons_groups_approve_trust(OgMembership $og_membership) {
   drupal_goto('contacts/invitations');
 }
 
-function commons_groups_ignore_trust($og_membership) {
+/**
+ * Menu callback; Ignoring a Trusted-Contact Invitation by setting each user's
+ * membership state to 'Blocked'.
+ *
+ * @param $og_membership
+ *    The membership in which the logged-in user is the group and the requesting
+ *    user is the member.
+ */
+function commons_groups_ignore_trust(OgMembership $og_membership) {
   global $user;
 
   if ($og_membership->gid != $user->uid) {
-    // User can only ignore his requests.
+    // Users can only ignore their requests.
     return;
   }
 
@@ -977,25 +1019,55 @@ function commons_groups_ignore_trust($og_membership) {
   drupal_goto('contacts/invitations');
 }
 
+/**
+ * Access callback for creating a Trusted-Contact request; Makes sure that the
+ * token is correct.
+ *
+ * @param $account
+ *    The group in which the logged-in user wants to join.
+ */
 function commons_groups_request_trust_access($account, $token) {
   global $user;
 
   return drupal_valid_token($token, 'request' . ':' . $account->uid . ':' . $user->uid);
 }
 
+/**
+ * Access callback for breaking a Trusted-Contact relation; Makes sure that the
+ * token is correct.
+ *
+ * @param $account
+ *    The account which the logged-in user wants to break contact with.
+ */
 function commons_groups_un_trust_access($account, $token) {
   global $user;
 
-  return drupal_valid_token($token, 'un' . ':' . $account->uid . ':' . $user->uid);
+  return drupal_valid_token($token, 'untrust' . ':' . $account->uid . ':' . $user->uid);
 }
 
-function commons_groups_approve_trust_access($og_membership, $token) {
+/**
+ * Access callback for approving an invitation; Makes sure that the token is
+ * correct.
+ *
+ * @param $og_membership
+ *    The membership in which the logged-in user is the group and the requesting
+ *    user is the member.
+ */
+function commons_groups_approve_trust_access(OgMembership $og_membership, $token) {
   $wrapper = entity_metadata_wrapper('og_membership', $og_membership);
 
   return ($wrapper->field_membership_token->value() == $token);
 }
 
-function commons_groups_ignore_trust_access($og_membership, $token) {
+/**
+ * Access callback for ignoring an invitation; Makes sure that the token is
+ * correct.
+ *
+ * @param $og_membership
+ *    The membership in which the logged-in user is the group and the requesting
+ *    user is the member.
+ */
+function commons_groups_ignore_trust_access(OgMembership $og_membership, $token) {
   $wrapper = entity_metadata_wrapper('og_membership', $og_membership);
 
   return ($wrapper->field_membership_token->value() == $token);
@@ -1007,7 +1079,7 @@ function commons_groups_ignore_trust_access($og_membership, $token) {
  * @param $uid
  *    User ID.
  *
- * @param $uid2
+ * @param $account
  *    Optional; Other user's object. If not provided, current user will be used.
  */
 function commons_group_is_trusted_contact($uid, $account = NULL) {
@@ -1020,7 +1092,12 @@ function commons_group_is_trusted_contact($uid, $account = NULL) {
 }
 
 /**
- * Access callback.
+ * Access callback for writing a private message to another user;
+ * Checks permissions and makes sure that the given user and the logged-in user
+ * are Trusted-Contacts.
+ *
+ * @param $uid
+ *    Addressee's User ID.
  */
 function commons_groups_privatemsg_write_access($uid) {
   return (privatemsg_user_access('write privatemsg') && commons_group_is_trusted_contact($uid));
