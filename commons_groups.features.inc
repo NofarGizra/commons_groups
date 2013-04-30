@@ -114,14 +114,14 @@ function commons_groups_default_message_type() {
     "arguments" : null,
     "message_text" : { "und" : [
         {
-          "value" : "You have a Trusted-Contact request pending from [message:field-requesting-user:name]",
+          "value" : "\\u003Cp\\u003EYou have a Trusted-Contact request pending from [message:field-requesting-user:name]\\u003C\\/p\\u003E\\r\\n",
           "format" : "full_html",
-          "safe_value" : "You have a Trusted-Contact request pending from [message:field-requesting-user:name]"
+          "safe_value" : "\\u003Cp\\u003EYou have a Trusted-Contact request pending from [message:field-requesting-user:name]\\u003C\\/p\\u003E\\n"
         },
         {
-          "value" : "\\u003Cp\\u003EHello,\\u003C\\/p\\u003E\\r\\n\\r\\n\\u003Cp\\u003EYou have a Trusted-Contact request pending from [message:field-requesting-user:name]\\u003C\\/p\\u003E\\r\\n\\r\\n\\u003Cp\\u003EYou may approve\\u0026nbsp;or ignore.\\u003C\\/p\\u003E\\r\\n\\r\\n\\u003Cp\\u003E@{approve-url} | \\u003Cspan\\u003E@{ignore-url}\\u003C\\/span\\u003E\\u003C\\/p\\u003E",
+          "value" : "\\u003Cp\\u003EHello,\\u003C\\/p\\u003E\\r\\n\\r\\n\\u003Cp\\u003EYou have a Trusted-Contact request pending from [message:field-requesting-user:name]\\u003C\\/p\\u003E\\r\\n\\r\\n\\u003Cp\\u003EYou may approve or ignore.\\u003C\\/p\\u003E\\r\\n\\r\\n\\u003Cp\\u003E\\u003Ca href=\\u0022@{approve-url}\\u0022\\u003EApprove\\u003C\\/a\\u003E | \\u003Ca href=\\u0022@{ignore-url}\\u0022\\u003EIgnore\\u003C\\/a\\u003E\\u003C\\/p\\u003E\\r\\n",
           "format" : "full_html",
-          "safe_value" : "\\u003Cp\\u003EHello,\\u003C\\/p\\u003E\\n\\n\\u003Cp\\u003EYou have a Trusted-Contact request pending from [message:field-requesting-user:name]\\u003C\\/p\\u003E\\n\\n\\u003Cp\\u003EYou may approve\\u0026nbsp;or ignore.\\u003C\\/p\\u003E\\n\\n\\u003Cp\\u003E@{approve-url} | \\u003Cspan\\u003E@{ignore-url}\\u003C\\/span\\u003E\\u003C\\/p\\u003E"
+          "safe_value" : "\\u003Cp\\u003EHello,\\u003C\\/p\\u003E\\n\\n\\u003Cp\\u003EYou have a Trusted-Contact request pending from [message:field-requesting-user:name]\\u003C\\/p\\u003E\\n\\n\\u003Cp\\u003EYou may approve or ignore.\\u003C\\/p\\u003E\\n\\n\\u003Cp\\u003E\\u003Ca href=\\u0022@{approve-url}\\u0022\\u003EApprove\\u003C\\/a\\u003E | \\u003Ca href=\\u0022@{ignore-url}\\u0022\\u003EIgnore\\u003C\\/a\\u003E\\u003C\\/p\\u003E\\n"
         }
       ]
     },
