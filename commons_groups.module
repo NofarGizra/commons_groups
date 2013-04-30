@@ -739,6 +739,136 @@ function commons_groups_field_formatter_view($entity_type, $entity, $field, $ins
   }
 }
 
+/**
+ * Implements hook_og_membership_insert().
+ *
+ * @param OgMembership $og_membership
+ */
+function commons_groups_og_membership_insert(OgMembership $og_membership) {
+  if ($og_membership->type != 'trusted_contacts' || $og_membership->group_type != 'user') {
+    return;
+  }
+
+  if (!empty($og_membership->_skip_membership_insert)) {
+    return;
+  }
+
+  $token = md5(substr(str_shuffle('12458cdefghrstuvwxABCWXYZ'), 0, 10) . rand(100000, 999999));
+
+  $wrapper = entity_metadata_wrapper('og_membership', $og_membership);
+  $wrapper->field_my_request->set(1);
+  $wrapper->field_membership_token->set($token);
+
+  $values = array(
+    'entity' => $og_membership->gid,
+    'field_name' => 'user_trusted_contacts',
+    'state' => $og_membership->state,
+  );
+  $og_membership2 = og_group('user', $og_membership->etid, $values, FALSE);
+
+  $wrapper2 = entity_metadata_wrapper('og_membership', $og_membership2);
+  $wrapper2->field_original_og_membership->set($og_membership);
+  $wrapper2->field_my_request->set(0);
+  $wrapper2->field_membership_token->set($token);
+
+  // Prevent recursion.
+  $og_membership2->_skip_membership_insert = TRUE;
+  $wrapper2->save();
+
+
+  // Make sure OG membership is updated.
+  unset($og_membership->is_new);
+
+  $wrapper->save();
+}
+
+/**
+ * Implements hook_og_membership_update().
+ *
+ * @param OgMembership $og_membership
+ */
+function commons_groups_og_membership_update(OgMembership $og_membership) {
+  if ($og_membership->type != 'trusted_contacts' || $og_membership->group_type != 'user') {
+    return;
+  }
+
+  if (!empty($og_membership->_skip_membership_update)) {
+    return;
+  }
+
+  $wrapper = entity_metadata_wrapper('og_membership', $og_membership);
+  $wrapper_original = entity_metadata_wrapper('og_membership', $og_membership->original);
+
+  // Set the second OG Membership according to the first one.
+  // As we are referencing the requesting user to the requested user, we want to
+  // keep everything synced.
+  $query = new EntityFieldQuery();
+  $return = $query
+    ->entityCondition('entity_type', 'og_membership')
+    ->propertyCondition('group_type', 'user')
+    ->propertyCondition('entity_type', 'user')
+    ->propertyCondition('etid', $og_membership->gid)
+    ->propertyCondition('gid', $og_membership->etid)
+    ->execute();
+
+  $membership_id = key($return['og_membership']);
+
+  $wrapper2 = entity_metadata_wrapper('og_membership', $membership_id);
+  $og_membership2 = $wrapper2->value();
+
+  if ($wrapper->state->value() != $wrapper_original->state->value()) {
+    // State was changed.
+    $wrapper2->state->set($wrapper->state->value());
+
+    if ($og_membership2->state == OG_STATE_PENDING) {
+      // Responding to a Trusted-Contact request.
+      $confirmation = $wrapper->state->value() == OG_STATE_ACTIVE;
+      $wrapper->field_confirmation = set($confirmation);
+      $wrapper->field_response_date = set(time());
+
+      // Prevent recursion.
+      $og_membership->_skip_membership_update = TRUE;
+      $wrapper->save();
+    }
+  }
+
+  if ($wrapper->field_confirmation->value() != $wrapper_original->field_confirmation->value()) {
+    // Confirmation was changed.
+    $wrapper2->field_confirmation->set($wrapper->field_confirmation->value());
+  }
+
+  if ($wrapper->field_response_date->value() != $wrapper_original->field_response_date->value()) {
+    // Response Date was changed.
+    $wrapper2->field_response_date->set($wrapper->field_response_date->value());
+  }
+
+  // Prevent recursion.
+  $og_membership2->_skip_membership_update = TRUE;
+  $wrapper2->save();
+}
+
+
+/**
+ * Implements hook_og_membership_delete().
+ *
+ * @param OgMembership $og_membership
+ *
+ * @param $type
+ */
+function commons_groups_og_membership_delete(OgMembership $og_membership, $type) {
+  if ($og_membership->type != 'trusted_contacts' || $og_membership->group_type != 'user') {
+    return;
+  }
+  
+  if (!og_is_member('user', $og_membership->etid, 'user', $og_membership->gid)) {
+    // Prevent recursion.
+    return;
+  }
+
+  // Delete the "opposite" OG membership too.
+  og_ungroup('user', $og_membership->etid, 'user', $og_membership->gid);
+}
+
 function commons_groups_request_trust($account, $ajax) {
   global $user;
 
@@ -747,22 +877,8 @@ function commons_groups_request_trust($account, $ajax) {
     return;
   }
 
-  $token = md5(substr(str_shuffle('12458cdefghrstuvwxABCWXYZ'), 0, 10) . rand(100000, 999999));
-
-  // @todo: Allow og_group() to return an un-saved OG-membership.
+  // This actually adds 2 OG memberships - one for each user.
   $og_membership = og_group('user', $account, array('field_name' => 'user_trusted_contacts' ,'state' => OG_STATE_PENDING));
-
-  $wrapper = entity_metadata_wrapper('og_membership', $og_membership);
-  $wrapper->field_my_request->set(TRUE);
-  $wrapper->field_membership_token->set($token);
-  $wrapper->save();
-
-  $og_membership2 = og_group('user', $user, array('entity' => $account, 'field_name' => 'user_trusted_contacts' ,'state' => OG_STATE_PENDING));
-
-  $wrapper = entity_metadata_wrapper('og_membership', $og_membership2);
-  $wrapper->field_original_og_membership->set($og_membership);
-  $wrapper->field_membership_token->set($token);
-  $wrapper->save();
 
   // Notify.
 
@@ -794,6 +910,7 @@ function commons_groups_request_trust($account, $ajax) {
 function commons_groups_un_trust($account, $ajax) {
   global $user;
 
+  // This actually deletes 2 OG memberships - one for each user.
   og_ungroup('user', $account->uid);
 
   // Ajax
@@ -812,7 +929,7 @@ function commons_groups_un_trust($account, $ajax) {
   }
 }
 
-function commons_groups_approve_trust($og_membership) {
+function commons_groups_approve_trust(OgMembership $og_membership) {
   global $user;
 
   if ($og_membership->gid != $user->uid) {
@@ -820,27 +937,9 @@ function commons_groups_approve_trust($og_membership) {
     return;
   }
 
+  // This actually changes both OG memberships - one for each user.
   $wrapper = entity_metadata_wrapper('og_membership', $og_membership);
   $wrapper->state->set(OG_STATE_ACTIVE);
-  $wrapper->field_confirmation->set(TRUE);
-  $wrapper->field_response_date->set(time());
-  $wrapper->save();
-
-  // Set the other membership to Active too.
-  $query = new EntityFieldQuery();
-  $return = $query
-    ->entityCondition('entity_type', 'og_membership')
-    ->propertyCondition('group_type', 'user')
-    ->propertyCondition('entity_type', 'user')
-    ->propertyCondition('etid', $og_membership->gid)
-    ->propertyCondition('gid', $og_membership->etid)
-    ->execute();
-  $membership_id = key($return['og_membership']);
-
-  $wrapper = entity_metadata_wrapper('og_membership', $membership_id);
-  $wrapper->state->set(OG_STATE_ACTIVE);
-  $wrapper->field_confirmation->set(TRUE);
-  $wrapper->field_response_date->set(time());
   $wrapper->save();
 
   // Notify.
@@ -868,25 +967,9 @@ function commons_groups_ignore_trust($og_membership) {
     return;
   }
 
+  // This actually changes both OG memberships - one for each user.
   $wrapper = entity_metadata_wrapper('og_membership', $og_membership);
   $wrapper->state->set(OG_STATE_BLOCKED);
-  $wrapper->field_response_date->set(time());
-  $wrapper->save();
-
-  // Set the other membership to Blocked too.
-  $query = new EntityFieldQuery();
-  $return = $query
-    ->entityCondition('entity_type', 'og_membership')
-    ->propertyCondition('group_type', 'user')
-    ->propertyCondition('entity_type', 'user')
-    ->propertyCondition('etid', $og_membership->gid)
-    ->propertyCondition('gid', $og_membership->etid)
-    ->execute();
-  $membership_id = key($return['og_membership']);
-
-  $wrapper = entity_metadata_wrapper('og_membership', $membership_id);
-  $wrapper->state->set(OG_STATE_BLOCKED);
-  $wrapper->field_response_date->set(time());
   $wrapper->save();
 
   // Redirect to Invitations screen.
