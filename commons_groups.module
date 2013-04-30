@@ -797,6 +797,7 @@ function commons_groups_og_membership_update(OgMembership $og_membership) {
   }
 
   $wrapper = entity_metadata_wrapper('og_membership', $og_membership);
+
   $wrapper_original = entity_metadata_wrapper('og_membership', $og_membership->original);
 
   // Set the second OG Membership according to the first one.
@@ -820,11 +821,11 @@ function commons_groups_og_membership_update(OgMembership $og_membership) {
     // State was changed.
     $wrapper2->state->set($wrapper->state->value());
 
-    if ($og_membership2->state == OG_STATE_PENDING) {
+    if ($wrapper_original->state->value() == OG_STATE_PENDING) {
       // Responding to a Trusted-Contact request.
       $confirmation = $wrapper->state->value() == OG_STATE_ACTIVE;
-      $wrapper->field_confirmation = set($confirmation);
-      $wrapper->field_response_date = set(time());
+      $wrapper->field_confirmation->set($confirmation);
+      $wrapper->field_response_date->set(time());
 
       // Prevent recursion.
       $og_membership->_skip_membership_update = TRUE;
@@ -859,7 +860,7 @@ function commons_groups_og_membership_delete(OgMembership $og_membership, $type)
   if ($og_membership->type != 'trusted_contacts' || $og_membership->group_type != 'user') {
     return;
   }
-  
+
   if (!og_is_member('user', $og_membership->etid, 'user', $og_membership->gid)) {
     // Prevent recursion.
     return;
