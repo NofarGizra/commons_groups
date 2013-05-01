@@ -92,6 +92,7 @@ features[views_view][] = commons_groups_contributors
 features[views_view][] = commons_groups_directory
 features[views_view][] = commons_groups_recent_content
 features[views_view][] = commons_groups_user_groups
+features[views_view][] = private_messages
 features[views_view][] = trusted_contacts
 features[views_view][] = trusted_contacts_invitations
 features_exclude[field][message-trusted_contact_request_approved-field_approving_user] = message-trusted_contact_request_approved-field_approving_user
