@@ -64,6 +64,14 @@ function commons_groups_menu() {
     'type' => MENU_CALLBACK,
   );
 
+  $items['contacts/messages/popup/%user'] = array(
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('commons_groups_messages_popup', 3),
+    'access callback' => 'commons_groups_privatemsg_write_access',
+    'access arguments' => array(2),
+    'type' => MENU_CALLBACK,
+  );
+
   return $items;
 }
 
@@ -78,6 +86,17 @@ function commons_groups_menu_alter(&$items) {
 
   $items['messages/new']['access callback'] = 'commons_groups_privatemsg_write_access';
   $items['messages/new']['access arguments'] = array(2);
+}
+
+/**
+ * Implements hook_admin_paths().
+ */
+function commons_groups_admin_paths() {
+  $paths = array(
+    'contacts/messages/popup/*' => TRUE,
+  );
+
+  return $paths;
 }
 
 /**
@@ -660,7 +679,7 @@ function commons_groups_field_formatter_view($entity_type, $entity, $field, $ins
       list($id,, $bundle) = entity_extract_ids($entity_type, $entity);
       if (og_is_member($entity_type, $id, 'user', $account, array(OG_STATE_ACTIVE))) {
         $links['title'] = t('Message');
-        $links['href'] = "messages/new/$id";
+        $links['href'] = "contacts/messages/popup/$id";
       }
       else
         if (og_is_member($entity_type, $id, 'user', $account, array(OG_STATE_PENDING))) {
@@ -1100,6 +1119,13 @@ function commons_group_is_trusted_contact($uid, $account = NULL) {
  *    Addressee's User ID.
  */
 function commons_groups_privatemsg_write_access($uid) {
+  global $user;
+
+  if ($user->uid == 1) {
+    // Always allow admin to send private messages.
+    return true;
+  }
+
   return (privatemsg_user_access('write privatemsg') && commons_group_is_trusted_contact($uid));
 }
 
@@ -1144,6 +1170,7 @@ function commons_groups_operations_load_action_includes() {
   $files = array(
     'set_state_active.action.inc',
     'set_state_blocked.action.inc',
+    'mark_as_read.action.inc',
   );
 
   if (!$loaded) {
@@ -1154,4 +1181,42 @@ function commons_groups_operations_load_action_includes() {
   }
 
   return $files;
+}
+
+/**
+ * Menu callback; Write Private Message popup form.
+ *
+ * @param $account
+ *    The addressee's account.
+ */
+function commons_groups_messages_popup($form, &$form_state, $account) {
+  $wrapper = entity_metadata_wrapper('user', $account);
+  $picture_path = empty($account->picture) ? variable_get('user_picture_default') : $wrapper->value()->picture->uri;
+
+  $form['user_picture'] = array(
+    '#theme' => 'image_style',
+    '#style_name' => '50x50_avatar',
+    '#path' => $picture_path,
+    '#prefix' => '<div class="user-picture">',
+    '#suffix' => '</div>',
+  );
+
+  $form['body'] = array(
+    '#type' => 'textarea',
+    '#rows' => 6,
+  );
+
+  $form['actions'] = array('#type' => 'actions');
+
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Send'),
+  );
+
+  $form['actions']['full_form'] = array(
+    '#type' => 'markup',
+    '#markup' => l(t('Go to full form'), 'messages/new/' . $account->uid),
+  );
+
+  return $form;
 }
