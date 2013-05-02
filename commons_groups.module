@@ -1235,37 +1235,31 @@ function commons_groups_messages_popup($form, &$form_state, $account) {
   return $form;
 }
 
+/**
+ * Implements hook_privatemsg_message_insert().
+ *
+ * When a private message is sent, update the recipients' notification counts.
+ */
 function commons_groups_privatemsg_message_insert($message) {
-  dpm($message);
+  foreach ($message->recipients as $recipient) {
+    commons_notify_add_notification_item($recipient);
+  }
 }
 
-//function commons_groups_views_query_alter(&$view, &$query) {
-//
-////  switch($view->name) {
-////    case 'private_messages':
-////      dpm('yellow');
-////      $query->add_groupby('thread_id');
-////      break;
-////  }
-//
-//
-//
-////  $query->groupby['thread_id'] = array(
-////    'field' => 'thread_id',
-////    'table' => 'pm_index',
-////    'alias' => 'pm_index_thread_id',
-////  );
-//}
-//
-//function commons_groups_query_alter(&$query){
-//  if(isset($query->alterMetaData)){
-//    if(isset($query->alterMetaData['view'])){
-//      if($query->alterMetaData['view']->name == "private_messages"){
-//        //Get a list of all 'group by' in the query
-//        $fields =& $query->getGroupBy();
-//
-//        $query->groupBy("thread_id");
-//      }
-//    }
-//  }
-//}
+/**
+ * Implements hook_privatemsg_message_status_changed().
+ *
+ * When a private message changes status from 'read' to 'unread' or vice versa,
+ * update the recipients' notification counts accordingly.
+ */
+function commons_groups_privatemsg_message_status_changed($pmid, $status, $account) {
+  if ($status) {
+    // Status changed to unread.
+    commons_notify_add_notification_item($account);
+  }
+  else {
+    // Status changed to read.
+    commons_notify_remove_notification_item($account);
+  }
+}
+
