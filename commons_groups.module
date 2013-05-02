@@ -1133,7 +1133,7 @@ function commons_groups_privatemsg_write_access($uid) {
  * Implement hook_form_FORM_alter().
  */
 function commons_groups_form_privatemsg_new_alter(&$form, &$form_state) {
-  $form['body']['#type'] = 'plain_text';
+  $form['body']['#format'] = 'plain_text';
 }
 
 /**
@@ -1190,21 +1190,12 @@ function commons_groups_operations_load_action_includes() {
  *    The addressee's account.
  */
 function commons_groups_messages_popup($form, &$form_state, $account) {
-  $wrapper = entity_metadata_wrapper('user', $account);
-  $picture_path = empty($account->picture) ? variable_get('user_picture_default') : $wrapper->value()->picture->uri;
+  global $user;
 
-  $form['user_picture'] = array(
-    '#theme' => 'image_style',
-    '#style_name' => '50x50_avatar',
-    '#path' => $picture_path,
-    '#prefix' => '<div class="user-picture">',
-    '#suffix' => '</div>',
-  );
+  // Include original functions.
+  require_once(drupal_get_path('module', 'privatemsg') . '/privatemsg.pages.inc');
 
-  $form['body'] = array(
-    '#type' => 'textarea',
-    '#rows' => 6,
-  );
+  $form = privatemsg_new($form, $form_state, $account->uid, 'New private message from ' . $user->name);
 
   $form['actions'] = array('#type' => 'actions');
 
@@ -1218,5 +1209,63 @@ function commons_groups_messages_popup($form, &$form_state, $account) {
     '#markup' => l(t('Go to full form'), 'messages/new/' . $account->uid),
   );
 
+
+  $wrapper = entity_metadata_wrapper('user', $account);
+  $picture_path = empty($account->picture) ? variable_get('user_picture_default') : $wrapper->value()->picture->uri;
+
+  $form['user_picture'] = array(
+    '#theme' => 'image_style',
+    '#style_name' => '50x50_avatar',
+    '#path' => $picture_path,
+    '#prefix' => '<div class="user-picture">',
+    '#suffix' => '</div>',
+    '#weight' => -50,
+  );
+
+  $form['body']['#format'] = 'plain_text';
+
+  unset($form['token']);
+
+  $form['subject']['#type'] = 'hidden';
+
+  $form['recipient']['#type'] = 'hidden';
+
+  drupal_set_title(t('Direct Message @recipient', array('@recipient' => $account->name)));
+
   return $form;
 }
+
+function commons_groups_privatemsg_message_insert($message) {
+  dpm($message);
+}
+
+//function commons_groups_views_query_alter(&$view, &$query) {
+//
+////  switch($view->name) {
+////    case 'private_messages':
+////      dpm('yellow');
+////      $query->add_groupby('thread_id');
+////      break;
+////  }
+//
+//
+//
+////  $query->groupby['thread_id'] = array(
+////    'field' => 'thread_id',
+////    'table' => 'pm_index',
+////    'alias' => 'pm_index_thread_id',
+////  );
+//}
+//
+//function commons_groups_query_alter(&$query){
+//  if(isset($query->alterMetaData)){
+//    if(isset($query->alterMetaData['view'])){
+//      if($query->alterMetaData['view']->name == "private_messages"){
+//        //Get a list of all 'group by' in the query
+//        $fields =& $query->getGroupBy();
+//
+//        $query->groupBy("thread_id");
+//      }
+//    }
+//  }
+//}
