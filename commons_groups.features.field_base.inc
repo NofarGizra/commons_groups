@@ -335,7 +335,6 @@ function commons_groups_field_default_field_bases() {
     'deleted' => '0',
     'entity_types' => array(),
     'field_name' => 'field_og_subscribe_settings',
-
     'foreign keys' => array(),
     'indexes' => array(
       'value' => array(
@@ -392,8 +391,8 @@ function commons_groups_field_default_field_bases() {
     'active' => '1',
     'cardinality' => '-1',
     'deleted' => '0',
-    'description' => 'Separate group names with commas',
     'entity_types' => array(),
+    'description' => 'Separate group names with commas',
     'field_name' => 'og_group_ref',
     'foreign keys' => array(
       'node' => array(
@@ -435,9 +434,7 @@ function commons_groups_field_default_field_bases() {
     'type' => 'entityreference',
   );
 
-
-
-// Exported field_base: 'og_group_ref'
+  // Exported field_base: 'og_group_ref'
   $field_bases['trusted_contacts'] = array(
     'active' => '1',
     'cardinality' => '1',
@@ -484,7 +481,6 @@ function commons_groups_field_default_field_bases() {
     'translatable' => '0',
     'type' => 'entityreference',
   );
-
 
   // Exported field_base: 'og_membership_request'
   $field_bases['og_membership_request'] = array(

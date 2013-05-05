@@ -415,7 +415,7 @@ function commons_groups_group_contributors_count_topics($group) {
 
   // Format the count of contributors.
   $output = '';
-  $view = views_embed_view('commons_contributors_group');
+  $view = views_get_view('commons_contributors_group');
   if (!empty($view)) {
     $view->set_display('panel_pane_1');
     $view->set_arguments(array($group->nid));

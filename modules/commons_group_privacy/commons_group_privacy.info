@@ -12,10 +12,3 @@ features[field_base][] = og_roles_permissions
 features[field_instance][] = node-group-group_access
 features[field_instance][] = node-group-og_roles_permissions
 features[field_instance][] = node-post-group_content_access
-
-; Information added by drush on 2013-04-22
-version = "7.x-3.0+21-dev"
-core = "7.x"
-project = "commons_groups"
-datestamp = "1366616163"
-
