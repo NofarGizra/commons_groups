@@ -127,7 +127,7 @@ function commons_groups_admin_paths() {
 }
 
 /**
- * Title callback;
+ * Title callback; Trusted contacts related titles.
  */
 function commons_groups_tab_title($tab) {
   global $user;
@@ -144,30 +144,27 @@ function commons_groups_tab_title($tab) {
         ->count()
         ->execute();
 
-      return t('Trusted Contacts' . ($count ? " [$count]" : ''));
-      break;
+      return t('Trusted Contacts [@count]', array('@count' => $count));
 
     case 'invitations':
       $wrapper = entity_metadata_wrapper('user', $user);
       $count = $wrapper->field_unread_invitations->value();
 
-      return t('Invitations' . ($count ? " [$count]" : ''));
-      break;
+      return t('Invitations [@count]', array('@count' => $count));
 
     case 'messages':
-      require_once(drupal_get_path('module', 'privatemsg') . '/privatemsg.pages.inc');
+      module_load_include('inc', 'privatemsg', 'privatemsg.pages');
 
       $wrapper = entity_metadata_wrapper('user', $user);
       $count = $wrapper->field_unread_messages->value();
 
-      return t('Messages' . ($count ? " [$count]" : ''));
-      break;
+      return t('Messages [@count]', array('@count' => $count));
   }
   return;
 }
 
 /**
- * Page callback;
+ * Page callback; Trusted contacts related pages.
  */
 function commons_groups_tab($tab) {
   global $user;
@@ -186,22 +183,20 @@ function commons_groups_tab($tab) {
 
       drupal_set_title('Trusted Contacts' . ($count ? " [$count]" : ''));
 
-      $view = views_get_view('trusted_contacts');
+      $view = views_embed_view('trusted_contacts');
       return $view->preview();
 
-      break;
     case 'invitations':
       $wrapper = entity_metadata_wrapper('user', $user);
       $count = $wrapper->field_unread_invitations->value();
 
       drupal_set_title('Invitations' . ($count ? " [$count]" : ''));
 
-      $view = views_get_view('trusted_contacts_invitations');
+      $view = views_embed_view('trusted_contacts_invitations');
       return $view->preview();
 
-      break;
     case 'messages':
-      require_once(drupal_get_path('module', 'privatemsg') . '/privatemsg.pages.inc');
+      module_load_include('inc', 'privatemsg', 'privatemsg.pages');
 
       $wrapper = entity_metadata_wrapper('user', $user);
       $count = $wrapper->field_unread_messages->value();
@@ -210,7 +205,6 @@ function commons_groups_tab($tab) {
 
       return privatemsg_list_page();
 
-      break;
   }
   return;
 }
@@ -296,7 +290,7 @@ function commons_groups_group_contributors_count_topics($group) {
 
   // Format the count of contributors.
   $output = '';
-  $view = views_get_view('commons_contributors_group');
+  $view = views_embed_view('commons_contributors_group');
   if (!empty($view)) {
     $view->set_display('panel_pane_1');
     $view->set_arguments(array($group->nid));
@@ -876,8 +870,6 @@ function commons_groups_field_formatter_view($entity_type, $entity, $field, $ins
         '#markup' =>  "$approve $ignore",
       );
       return $element;
-
-      break;
   }
 }
 
@@ -1324,7 +1316,7 @@ function commons_groups_messages_popup($form, &$form_state, $account) {
   global $user;
 
   // Include original functions.
-  require_once(drupal_get_path('module', 'privatemsg') . '/privatemsg.pages.inc');
+  module_load_include('inc', 'privatemsg', 'privatemsg.pages');
 
   $form = privatemsg_new($form, $form_state, $account->uid, 'New private message from ' . $user->name);
 
