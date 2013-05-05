@@ -68,8 +68,35 @@ function commons_groups_menu() {
     'page callback' => 'drupal_get_form',
     'page arguments' => array('commons_groups_messages_popup', 3),
     'access callback' => 'commons_groups_privatemsg_write_access',
-    'access arguments' => array(2),
+    'access arguments' => array(3),
     'type' => MENU_CALLBACK,
+  );
+
+  $items['contacts'] = array(
+    'title callback' => 'commons_groups_tab_title',
+    'title arguments' => array('contacts'),
+    'page callback' => 'commons_groups_tab',
+    'page arguments' => array('contacts'),
+    'access callback' => TRUE,
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  $items['contacts/invitations'] = array(
+    'title callback' => 'commons_groups_tab_title',
+    'title arguments' => array('invitations'),
+    'page callback' => 'commons_groups_tab',
+    'page arguments' => array('invitations'),
+    'access callback' => TRUE,
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  $items['contacts/messages'] = array(
+    'title callback' => 'commons_groups_tab_title',
+    'title arguments' => array('messages'),
+    'page callback' => 'commons_groups_tab',
+    'page arguments' => array('messages'),
+    'access callback' => TRUE,
+    'type' => MENU_NORMAL_ITEM,
   );
 
   return $items;
@@ -97,6 +124,95 @@ function commons_groups_admin_paths() {
   );
 
   return $paths;
+}
+
+/**
+ * Title callback;
+ */
+function commons_groups_tab_title($tab) {
+  global $user;
+
+  switch ($tab) {
+    case 'contacts':
+      $query = new EntityFieldQuery();
+      $count = $query
+        ->entityCondition('entity_type', 'og_membership')
+        ->propertyCondition('group_type', 'user')
+        ->propertyCondition('entity_type', 'user')
+        ->propertyCondition('gid', $user->uid)
+        ->propertyCondition('etid', $user->uid, '<>')
+        ->count()
+        ->execute();
+
+      return t('Trusted Contacts' . ($count ? " [$count]" : ''));
+      break;
+
+    case 'invitations':
+      $wrapper = entity_metadata_wrapper('user', $user);
+      $count = $wrapper->field_unread_invitations->value();
+
+      return t('Invitations' . ($count ? " [$count]" : ''));
+      break;
+
+    case 'messages':
+      require_once(drupal_get_path('module', 'privatemsg') . '/privatemsg.pages.inc');
+
+      $wrapper = entity_metadata_wrapper('user', $user);
+      $count = $wrapper->field_unread_messages->value();
+
+      return t('Messages' . ($count ? " [$count]" : ''));
+      break;
+  }
+  return;
+}
+
+/**
+ * Page callback;
+ */
+function commons_groups_tab($tab) {
+  global $user;
+
+  switch ($tab) {
+    case 'contacts':
+      $query = new EntityFieldQuery();
+      $count = $query
+        ->entityCondition('entity_type', 'og_membership')
+        ->propertyCondition('group_type', 'user')
+        ->propertyCondition('entity_type', 'user')
+        ->propertyCondition('gid', $user->uid)
+        ->propertyCondition('etid', $user->uid, '<>')
+        ->count()
+        ->execute();
+
+      drupal_set_title('Trusted Contacts' . ($count ? " [$count]" : ''));
+
+      $view = views_get_view('trusted_contacts');
+      return $view->preview();
+
+      break;
+    case 'invitations':
+      $wrapper = entity_metadata_wrapper('user', $user);
+      $count = $wrapper->field_unread_invitations->value();
+
+      drupal_set_title('Invitations' . ($count ? " [$count]" : ''));
+
+      $view = views_get_view('trusted_contacts_invitations');
+      return $view->preview();
+
+      break;
+    case 'messages':
+      require_once(drupal_get_path('module', 'privatemsg') . '/privatemsg.pages.inc');
+
+      $wrapper = entity_metadata_wrapper('user', $user);
+      $count = $wrapper->field_unread_messages->value();
+
+      drupal_set_title('Messages' . ($count ? " [$count]" : ''));
+
+      return privatemsg_list_page();
+
+      break;
+  }
+  return;
 }
 
 /**
@@ -811,6 +927,12 @@ function commons_groups_og_membership_insert(OgMembership $og_membership) {
   unset($og_membership->is_new);
 
   $wrapper->save();
+
+  if ($og_membership->state == OG_STATE_PENDING) {
+    // Add 1 to unread invitations count.
+    $account = user_load($og_membership->gid);
+    commons_notify_add_notification_item($account, 'invitation');
+  }
 }
 
 /**
@@ -861,6 +983,15 @@ function commons_groups_og_membership_update(OgMembership $og_membership) {
       // Prevent recursion.
       $og_membership->_skip_membership_update = TRUE;
       $wrapper->save();
+
+      // Subtract 1 from unread invitations count.
+      $account = user_load($og_membership->gid);
+      commons_notify_remove_notification_item($account, 'invitation');
+    }
+    elseif ($wrapper->state->value() == OG_STATE_PENDING) {
+      // Add 1 to unread invitations count.
+      $account = user_load($og_membership->gid);
+      commons_notify_add_notification_item($account, 'invitation');
     }
   }
 
@@ -1116,9 +1247,9 @@ function commons_group_is_trusted_contact($uid, $account = NULL) {
  * are Trusted-Contacts.
  *
  * @param $uid
- *    Addressee's User ID.
+ *    Addressee's user object.
  */
-function commons_groups_privatemsg_write_access($uid) {
+function commons_groups_privatemsg_write_access($account) {
   global $user;
 
   if ($user->uid == 1) {
@@ -1126,7 +1257,7 @@ function commons_groups_privatemsg_write_access($uid) {
     return true;
   }
 
-  return (privatemsg_user_access('write privatemsg') && commons_group_is_trusted_contact($uid));
+  return (privatemsg_user_access('write privatemsg') && commons_group_is_trusted_contact($account->uid));
 }
 
 /**
@@ -1242,7 +1373,7 @@ function commons_groups_messages_popup($form, &$form_state, $account) {
  */
 function commons_groups_privatemsg_message_insert($message) {
   foreach ($message->recipients as $recipient) {
-    commons_notify_add_notification_item($recipient);
+    commons_notify_add_notification_item($recipient, 'message');
   }
 }
 
@@ -1255,11 +1386,10 @@ function commons_groups_privatemsg_message_insert($message) {
 function commons_groups_privatemsg_message_status_changed($pmid, $status, $account) {
   if ($status) {
     // Status changed to unread.
-    commons_notify_add_notification_item($account);
+    commons_notify_add_notification_item($account, 'message');
   }
   else {
     // Status changed to read.
-    commons_notify_remove_notification_item($account);
+    commons_notify_remove_notification_item($account, 'message');
   }
 }
-
