@@ -181,7 +181,7 @@ function commons_groups_tab($tab) {
         ->count()
         ->execute();
 
-      drupal_set_title('Trusted Contacts' . ($count ? " [$count]" : ''));
+      drupal_set_title(t('Trusted Contacts [@count]', array('@count' => $count)));
 
       $view = views_embed_view('trusted_contacts');
       return $view->preview();
@@ -190,7 +190,7 @@ function commons_groups_tab($tab) {
       $wrapper = entity_metadata_wrapper('user', $user);
       $count = $wrapper->field_unread_invitations->value();
 
-      drupal_set_title('Invitations' . ($count ? " [$count]" : ''));
+      drupal_set_title('Invitations [@count]', array('@count' => $count));
 
       $view = views_embed_view('trusted_contacts_invitations');
       return $view->preview();
@@ -201,7 +201,7 @@ function commons_groups_tab($tab) {
       $wrapper = entity_metadata_wrapper('user', $user);
       $count = $wrapper->field_unread_messages->value();
 
-      drupal_set_title('Messages' . ($count ? " [$count]" : ''));
+      drupal_set_title(t('Messages [@count]', array('@count' => $count)));
 
       return privatemsg_list_page();
 
