@@ -98,7 +98,8 @@ function commons_groups_menu() {
     'title arguments' => array('contacts'),
     'page callback' => 'commons_groups_tab',
     'page arguments' => array('contacts'),
-    'access callback' => TRUE,
+    'access callback' => commons_groups_tab_access,
+    'access arguments' => array(1),
     'type' => MENU_LOCAL_TASK,
   );
 
@@ -107,7 +108,8 @@ function commons_groups_menu() {
     'title arguments' => array('invitations'),
     'page callback' => 'commons_groups_tab',
     'page arguments' => array('invitations'),
-    'access callback' => TRUE,
+    'access callback' => commons_groups_tab_access,
+    'access arguments' => array(1),
     'type' => MENU_LOCAL_TASK,
   );
 
@@ -116,7 +118,8 @@ function commons_groups_menu() {
     'title arguments' => array('messages'),
     'page callback' => 'commons_groups_tab',
     'page arguments' => array('messages'),
-    'access callback' => TRUE,
+    'access callback' => commons_groups_tab_access,
+    'access arguments' => array(1),
     'type' => MENU_LOCAL_TASK,
   );
 
@@ -192,6 +195,25 @@ function commons_groups_og_role_change_permissions($role) {
   if (!empty($permissions[$role->rid])) {
     _commons_groups_update_group_permissions($role, $permissions[$role->rid]);
   }
+}
+
+/**
+ * Access callback for trusted contacts related pages;
+ */
+function commons_groups_tab_access($account) {
+  global $user;
+
+  if ($user->uid == 1) {
+    // Admin user.
+    return TRUE;
+  }
+
+  if ($user->uid == $account->uid) {
+    // User's own pages.
+    return TRUE;
+  }
+
+  return false;
 }
 
 /**
