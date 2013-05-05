@@ -1256,7 +1256,7 @@ function commons_groups_views_default_views() {
 
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page');
-  $handler->display->display_options['path'] = 'contacts/messages';
+  $handler->display->display_options['path'] = 'contacts2/messages';
   $export['private_messages'] = $view;
 
   $view = new view();
@@ -1463,7 +1463,7 @@ function commons_groups_views_default_views() {
 
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page');
-  $handler->display->display_options['path'] = 'contacts';
+  $handler->display->display_options['path'] = 'contacts2';
   $export['trusted_contacts'] = $view;
 
   $view = new view();
@@ -1655,7 +1655,7 @@ function commons_groups_views_default_views() {
 
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page');
-  $handler->display->display_options['path'] = 'contacts/invitations';
+  $handler->display->display_options['path'] = 'contacts2/invitations';
   $export['trusted_contacts_invitations'] = $view;
 
   return $export;
