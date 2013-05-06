@@ -948,6 +948,73 @@ function commons_groups_field_definition(&$field_instances, $entity_type, $bundl
     ),
   );
 
+  // Exported field_instance: 'node-post-og_user_group_ref'
+  $field_instances["$entity_type-$bundle-og_user_group_ref"] = array(
+    'bundle' => $bundle,
+    'default_value' => NULL,
+    'default_value_function' => 'commons_groups_entityreference_default_value',
+    'deleted' => '0',
+    'description' => 'Separate group names with commas',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'og_ui',
+        'settings' => array(),
+        'type' => 'og_list_default',
+        'weight' => 11,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => $entity_type,
+    'field_name' => 'og_user_group_ref',
+    'label' => 'Groups',
+    'required' => 0,
+    'settings' => array(
+      'behaviors' => array(
+        'og_widget' => array(
+          'admin' => array(
+            'widget_type' => 'entityreference_autocomplete_tags',
+          ),
+          'default' => array(
+            'widget_type' => 'entityreference_autocomplete_tags',
+          ),
+          'status' => TRUE,
+        ),
+        'prepopulate' => array(
+          'action' => 'none',
+          'fallback' => 'none',
+          'og_context' => 0,
+          'skip_perm' => '0',
+          'status' => 1,
+        ),
+      ),
+      'user_register_form' => FALSE,
+    ),
+    'view modes' => array(
+      'full' => array(
+        'custom settings' => FALSE,
+        'label' => 'Full',
+        'type' => 'og_list_default',
+      ),
+      'teaser' => array(
+        'custom settings' => FALSE,
+        'label' => 'Teaser',
+        'type' => 'og_list_default',
+      ),
+    ),
+    'widget' => array(
+      'active' => 0,
+      'module' => 'og',
+      'settings' => array(),
+      'type' => 'og_complex',
+      'weight' => 5,
+    ),
+  );
 
   if (module_exists('og_access')) {
     // Exported field_instance: '[entity]-[bundle]-group_content_access'
