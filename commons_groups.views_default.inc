@@ -1306,7 +1306,7 @@ function commons_groups_views_default_views() {
   $handler->display->display_options['arguments']['uid_1']['id'] = 'uid_1';
   $handler->display->display_options['arguments']['uid_1']['table'] = 'users';
   $handler->display->display_options['arguments']['uid_1']['field'] = 'uid';
-  $handler->display->display_options['arguments']['uid_1']['relationship'] = 'og_membership_related_user_group';
+  $handler->display->display_options['arguments']['uid_1']['relationship'] = 'og_membership_related_user';
   $handler->display->display_options['arguments']['uid_1']['default_action'] = 'default';
   $handler->display->display_options['arguments']['uid_1']['default_argument_type'] = 'current_user';
   $handler->display->display_options['arguments']['uid_1']['summary']['number_of_records'] = '0';
