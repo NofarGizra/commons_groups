@@ -534,7 +534,7 @@ function commons_groups_field_default_field_bases() {
     'locked' => '0',
     'module' => 'entityreference',
     'settings' => array(
-      'handler' => 'og_commons',
+      'handler' => 'og',
       'handler_settings' => array(
         'behaviors' => array(
           'og_behavior' => array(
@@ -542,12 +542,10 @@ function commons_groups_field_default_field_bases() {
           ),
         ),
         'membership_type' => 'og_membership_type_default',
-        'primary_field' => FALSE,
-        'reference_type' => 'my_groups',
-        'target_bundles' => array(),
+        'target_bundles' => array('user' => 'user'),
       ),
       'handler_submit' => 'Change handler',
-      'target_type' => 'node',
+      'target_type' => 'user',
     ),
     'translatable' => '0',
     'type' => 'entityreference',
