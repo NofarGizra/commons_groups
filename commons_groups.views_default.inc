@@ -1116,150 +1116,6 @@ function commons_groups_views_default_views() {
   $export['commons_groups_user_groups'] = $view;
 
   $view = new view();
-  $view->name = 'private_messages';
-  $view->description = '';
-  $view->tag = 'default';
-  $view->base_table = 'pm_message';
-  $view->human_name = 'Private Messages';
-  $view->core = 7;
-  $view->api_version = '3.0';
-  $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
-
-  /* Display: Master */
-  $handler = $view->new_display('default', 'Master', 'default');
-  $handler->display->display_options['title'] = 'Messages';
-  $handler->display->display_options['use_more_always'] = FALSE;
-  $handler->display->display_options['access']['type'] = 'none';
-  $handler->display->display_options['cache']['type'] = 'none';
-  $handler->display->display_options['query']['type'] = 'views_query';
-  $handler->display->display_options['exposed_form']['type'] = 'basic';
-  $handler->display->display_options['pager']['type'] = 'full';
-  $handler->display->display_options['pager']['options']['items_per_page'] = '10';
-  $handler->display->display_options['style_plugin'] = 'table';
-  /* Relationship: Privatemsg: Message author */
-  $handler->display->display_options['relationships']['privatemsg_author']['id'] = 'privatemsg_author';
-  $handler->display->display_options['relationships']['privatemsg_author']['table'] = 'pm_message';
-  $handler->display->display_options['relationships']['privatemsg_author']['field'] = 'privatemsg_author';
-  /* Field: Privatemsg: Thread ID */
-  $handler->display->display_options['fields']['thread_id']['id'] = 'thread_id';
-  $handler->display->display_options['fields']['thread_id']['table'] = 'pm_index';
-  $handler->display->display_options['fields']['thread_id']['field'] = 'thread_id';
-  $handler->display->display_options['fields']['thread_id']['label'] = '';
-  $handler->display->display_options['fields']['thread_id']['exclude'] = TRUE;
-  $handler->display->display_options['fields']['thread_id']['element_label_colon'] = FALSE;
-  /* Field: Privatemsg: Message ID */
-  $handler->display->display_options['fields']['privatemsg_id']['id'] = 'privatemsg_id';
-  $handler->display->display_options['fields']['privatemsg_id']['table'] = 'pm_message';
-  $handler->display->display_options['fields']['privatemsg_id']['field'] = 'privatemsg_id';
-  $handler->display->display_options['fields']['privatemsg_id']['label'] = '';
-  $handler->display->display_options['fields']['privatemsg_id']['exclude'] = TRUE;
-  $handler->display->display_options['fields']['privatemsg_id']['element_label_colon'] = FALSE;
-  /* Field: Bulk operations: Privatemsg */
-  $handler->display->display_options['fields']['views_bulk_operations']['id'] = 'views_bulk_operations';
-  $handler->display->display_options['fields']['views_bulk_operations']['table'] = 'pm_message';
-  $handler->display->display_options['fields']['views_bulk_operations']['field'] = 'views_bulk_operations';
-  $handler->display->display_options['fields']['views_bulk_operations']['label'] = '';
-  $handler->display->display_options['fields']['views_bulk_operations']['element_label_colon'] = FALSE;
-  $handler->display->display_options['fields']['views_bulk_operations']['vbo_settings']['display_type'] = '1';
-  $handler->display->display_options['fields']['views_bulk_operations']['vbo_settings']['enable_select_all_pages'] = 0;
-  $handler->display->display_options['fields']['views_bulk_operations']['vbo_settings']['force_single'] = 0;
-  $handler->display->display_options['fields']['views_bulk_operations']['vbo_settings']['entity_load_capacity'] = '10';
-  $handler->display->display_options['fields']['views_bulk_operations']['vbo_operations'] = array(
-    'action::views_bulk_operations_delete_item' => array(
-      'selected' => 1,
-      'postpone_processing' => 0,
-      'skip_confirmation' => 1,
-      'override_label' => 1,
-      'label' => 'Delete',
-    ),
-    'action::views_bulk_operations_script_action' => array(
-      'selected' => 0,
-      'postpone_processing' => 0,
-      'skip_confirmation' => 0,
-      'override_label' => 0,
-      'label' => '',
-    ),
-    'action::commons_groups_mark_as_read_action' => array(
-      'selected' => 1,
-      'postpone_processing' => 0,
-      'skip_confirmation' => 1,
-      'override_label' => 0,
-      'label' => '',
-    ),
-    'action::views_bulk_operations_modify_action' => array(
-      'selected' => 0,
-      'postpone_processing' => 0,
-      'skip_confirmation' => 0,
-      'override_label' => 0,
-      'label' => '',
-      'settings' => array(
-        'show_all_tokens' => 1,
-        'display_values' => array(
-          '_all_' => '_all_',
-        ),
-      ),
-    ),
-    'action::views_bulk_operations_argument_selector_action' => array(
-      'selected' => 0,
-      'skip_confirmation' => 0,
-      'override_label' => 0,
-      'label' => '',
-      'settings' => array(
-        'url' => '',
-      ),
-    ),
-    'action::system_send_email_action' => array(
-      'selected' => 0,
-      'postpone_processing' => 0,
-      'skip_confirmation' => 0,
-      'override_label' => 0,
-      'label' => '',
-    ),
-    'action::panelizer_set_status_action' => array(
-      'selected' => 0,
-      'postpone_processing' => 0,
-      'skip_confirmation' => 0,
-      'override_label' => 0,
-      'label' => '',
-    ),
-  );
-  /* Field: Privatemsg: Subject */
-  $handler->display->display_options['fields']['privatemsg_subject']['id'] = 'privatemsg_subject';
-  $handler->display->display_options['fields']['privatemsg_subject']['table'] = 'pm_message';
-  $handler->display->display_options['fields']['privatemsg_subject']['field'] = 'privatemsg_subject';
-  $handler->display->display_options['fields']['privatemsg_subject']['alter']['make_link'] = TRUE;
-  $handler->display->display_options['fields']['privatemsg_subject']['alter']['path'] = 'http://localhost/commons/messages/view/[thread_id]#privatemsg-mid-[privatemsg_id]';
-  $handler->display->display_options['fields']['privatemsg_subject']['element_label_colon'] = FALSE;
-  /* Field: User: Name */
-  $handler->display->display_options['fields']['name']['id'] = 'name';
-  $handler->display->display_options['fields']['name']['table'] = 'users';
-  $handler->display->display_options['fields']['name']['field'] = 'name';
-  $handler->display->display_options['fields']['name']['relationship'] = 'privatemsg_author';
-  $handler->display->display_options['fields']['name']['label'] = 'Author';
-  $handler->display->display_options['fields']['name']['element_label_colon'] = FALSE;
-  /* Field: Privatemsg: Privatemsg Send Date */
-  $handler->display->display_options['fields']['privatemsg_senddate']['id'] = 'privatemsg_senddate';
-  $handler->display->display_options['fields']['privatemsg_senddate']['table'] = 'pm_message';
-  $handler->display->display_options['fields']['privatemsg_senddate']['field'] = 'privatemsg_senddate';
-  $handler->display->display_options['fields']['privatemsg_senddate']['label'] = 'Recieved';
-  $handler->display->display_options['fields']['privatemsg_senddate']['element_label_colon'] = FALSE;
-  $handler->display->display_options['fields']['privatemsg_senddate']['date_format'] = 'time ago';
-  /* Contextual filter: Privatemsg: Recipient */
-  $handler->display->display_options['arguments']['recipient']['id'] = 'recipient';
-  $handler->display->display_options['arguments']['recipient']['table'] = 'pm_index';
-  $handler->display->display_options['arguments']['recipient']['field'] = 'recipient';
-  $handler->display->display_options['arguments']['recipient']['default_action'] = 'default';
-  $handler->display->display_options['arguments']['recipient']['default_argument_type'] = 'current_user';
-  $handler->display->display_options['arguments']['recipient']['summary']['number_of_records'] = '0';
-  $handler->display->display_options['arguments']['recipient']['summary']['format'] = 'default_summary';
-  $handler->display->display_options['arguments']['recipient']['summary_options']['items_per_page'] = '25';
-
-  /* Display: Page */
-  $handler = $view->new_display('page', 'Page', 'page');
-  $handler->display->display_options['path'] = 'contacts2/messages';
-  $export['private_messages'] = $view;
-
-  $view = new view();
   $view->name = 'trusted_contacts';
   $view->description = '';
   $view->tag = 'default';
@@ -1471,10 +1327,6 @@ function commons_groups_views_default_views() {
   $handler->display->display_options['filters']['state']['value'] = array(
     1 => '1',
   );
-
-  /* Display: Page */
-  $handler = $view->new_display('page', 'Page', 'page');
-  $handler->display->display_options['path'] = 'contacts2';
   $export['trusted_contacts'] = $view;
 
   $view = new view();
@@ -1663,10 +1515,6 @@ function commons_groups_views_default_views() {
   $handler->display->display_options['filters']['field_my_request_value']['value'] = array(
     1 => '1',
   );
-
-  /* Display: Page */
-  $handler = $view->new_display('page', 'Page', 'page');
-  $handler->display->display_options['path'] = 'contacts2/invitations';
   $export['trusted_contacts_invitations'] = $view;
 
   return $export;
