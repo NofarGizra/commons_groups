@@ -291,6 +291,7 @@ function commons_groups_tab_title($tab) {
         ->propertyCondition('entity_type', 'user')
         ->propertyCondition('gid', $user->uid)
         ->propertyCondition('etid', $user->uid, '<>')
+        ->propertyCondition('state', 1)
         ->count()
         ->execute();
 
@@ -328,6 +329,7 @@ function commons_groups_tab($tab) {
         ->propertyCondition('entity_type', 'user')
         ->propertyCondition('gid', $user->uid)
         ->propertyCondition('etid', $user->uid, '<>')
+        ->propertyCondition('state', 1)
         ->count()
         ->execute();
 
@@ -1059,7 +1061,7 @@ function commons_groups_field_formatter_view($entity_type, $entity, $field, $ins
       list($id,, $bundle) = entity_extract_ids($entity_type, $entity);
       if (og_is_member($entity_type, $id, 'user', $account, array(OG_STATE_ACTIVE))) {
         $links['title'] = t('Message');
-        $links['href'] = "contacts/messages/popup/$id";
+        $links['href'] = 'user/' . $user->uid . '/contacts/messages/popup/' . $id;
       }
       else
         if (og_is_member($entity_type, $id, 'user', $account, array(OG_STATE_PENDING))) {
@@ -1403,7 +1405,7 @@ function commons_groups_approve_trust(OgMembership $og_membership) {
   message_notify_send_message($message);
 
   // Redirect to Invitations screen.
-  drupal_goto('contacts/invitations');
+  drupal_goto('user/' . $user->uid . '/contacts/invitations');
 }
 
 /**
@@ -1428,7 +1430,7 @@ function commons_groups_ignore_trust(OgMembership $og_membership) {
   $wrapper->save();
 
   // Redirect to Invitations screen.
-  drupal_goto('contacts/invitations');
+  drupal_goto('user/' . $user->uid . '/contacts/invitations');
 }
 
 /**
@@ -1509,7 +1511,7 @@ function commons_group_is_trusted_contact($uid, $account = NULL) {
  * are Trusted-Contacts.
  *
  * @param $uid
- *    Addressee's user object.
+ *    Addressee's user object or User ID.
  */
 function commons_groups_privatemsg_write_access($account) {
   global $user;
@@ -1519,7 +1521,9 @@ function commons_groups_privatemsg_write_access($account) {
     return true;
   }
 
-  return (privatemsg_user_access('write privatemsg') && commons_group_is_trusted_contact($account->uid));
+  $uid = isset($account->uid) ? $account->uid : $account;
+
+  return (privatemsg_user_access('write privatemsg') && commons_group_is_trusted_contact($uid));
 }
 
 /**
@@ -1634,6 +1638,7 @@ function commons_groups_messages_popup($form, &$form_state, $account) {
  * When a private message is sent, update the recipients' notification counts.
  */
 function commons_groups_privatemsg_message_insert($message) {
+  dpm($message);
   foreach ($message->recipients as $recipient) {
     commons_notify_add_notification_item($recipient, 'message');
   }
