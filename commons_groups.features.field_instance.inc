@@ -954,7 +954,7 @@ function commons_groups_field_definition(&$field_instances, $entity_type, $bundl
     'default_value' => NULL,
     'default_value_function' => 'commons_groups_entityreference_default_value',
     'deleted' => '0',
-    'description' => 'Separate group names with commas',
+    'description' => '',
     'display' => array(
       'default' => array(
         'label' => 'above',
@@ -972,7 +972,7 @@ function commons_groups_field_definition(&$field_instances, $entity_type, $bundl
     ),
     'entity_type' => $entity_type,
     'field_name' => 'og_user_group_ref',
-    'label' => 'Groups',
+    'label' => 'User groups',
     'required' => 0,
     'settings' => array(
       'behaviors' => array(
@@ -986,11 +986,7 @@ function commons_groups_field_definition(&$field_instances, $entity_type, $bundl
           'status' => TRUE,
         ),
         'prepopulate' => array(
-          'action' => 'none',
-          'fallback' => 'none',
-          'og_context' => 0,
-          'skip_perm' => '0',
-          'status' => 1,
+          'status' => 0,
         ),
       ),
       'user_register_form' => FALSE,
