@@ -98,7 +98,7 @@ function commons_groups_menu() {
     'title arguments' => array('contacts'),
     'page callback' => 'commons_groups_tab',
     'page arguments' => array('contacts'),
-    'access callback' => commons_groups_tab_access,
+    'access callback' => 'commons_groups_tab_access',
     'access arguments' => array(1),
     'type' => MENU_LOCAL_TASK,
   );
@@ -108,7 +108,7 @@ function commons_groups_menu() {
     'title arguments' => array('invitations'),
     'page callback' => 'commons_groups_tab',
     'page arguments' => array('invitations'),
-    'access callback' => commons_groups_tab_access,
+    'access callback' => 'commons_groups_tab_access',
     'access arguments' => array(1),
     'type' => MENU_LOCAL_TASK,
   );
@@ -118,7 +118,7 @@ function commons_groups_menu() {
     'title arguments' => array('messages'),
     'page callback' => 'commons_groups_tab',
     'page arguments' => array('messages'),
-    'access callback' => commons_groups_tab_access,
+    'access callback' => 'commons_groups_tab_access',
     'access arguments' => array(1),
     'type' => MENU_LOCAL_TASK,
   );
