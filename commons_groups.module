@@ -1638,6 +1638,7 @@ function commons_groups_messages_popup($form, &$form_state, $account) {
  * When a private message is sent, update the recipients' notification counts.
  */
 function commons_groups_privatemsg_message_insert($message) {
+  
   foreach ($message->recipients as $recipient) {
     commons_notify_add_notification_item($recipient, 'message');
   }
