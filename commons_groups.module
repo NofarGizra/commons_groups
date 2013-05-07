@@ -203,7 +203,7 @@ function commons_groups_og_role_change_permissions($role) {
 function commons_groups_tab_access($account) {
   global $user;
 
-  if ($user->uid == 1) {
+  if (user_access('administer group')) {
     // Admin user.
     return TRUE;
   }
@@ -213,7 +213,7 @@ function commons_groups_tab_access($account) {
     return TRUE;
   }
 
-  return false;
+  return FALSE;
 }
 
 /**
@@ -261,6 +261,8 @@ function commons_groups_menu_alter(&$items) {
     $items['node/%/group']['title'] = t('Administer group');
   }
 
+  // Make sure only Trusted-Contacts send messages to each other.
+  // By default, PrivateMsg module only checks user permissions.
   $items['messages/new']['access callback'] = 'commons_groups_privatemsg_write_access';
   $items['messages/new']['access arguments'] = array(2);
 }
@@ -1032,7 +1034,7 @@ function commons_groups_field_formatter_info() {
       ),
     ),
     'approve_ignore' => array(
-      'label' => t('Approve Ignore'),
+      'label' => t('Approve/Ignore request'),
       'field types' => array('text'),
     ),
   );
@@ -1100,7 +1102,6 @@ function commons_groups_field_formatter_view($entity_type, $entity, $field, $ins
           }
 
           if (!og_check_field_cardinality('user', $account, $settings['field_name'])) {
-            // @todo: Is there a limit?
             $element[0] = array('#markup' => format_plural($field_info['cardinality'], 'You are already registered to another group', 'You are already registered to @count groups'));
             return $element;
           }
@@ -1114,7 +1115,6 @@ function commons_groups_field_formatter_view($entity_type, $entity, $field, $ins
             $links['options'] = array('attributes' => array('class' => array('use-ajax')));
           }
           else {
-            // @todo: Is this ok?
             $links['href'] = 'user/login';
             $links['options'] = array('query' => array('destination' => $url));
           }
@@ -1139,7 +1139,7 @@ function commons_groups_field_formatter_view($entity_type, $entity, $field, $ins
       $ignore = l(t('Ignore'), 'ignore-trust/' . $entity->id . '/' . $items[0]['value']);
 
       $element[0] = array(
-        '#markup' =>  "$approve $ignore",
+        '#markup' =>  $approve . ' ' . $ignore,
       );
       return $element;
   }
@@ -1147,6 +1147,10 @@ function commons_groups_field_formatter_view($entity_type, $entity, $field, $ins
 
 /**
  * Implements hook_og_membership_insert().
+ *
+ * Trusted Contacts are 2 users that are members on each other's groups.
+ * Whenever a user joins another user's group as a Trusted Contact, the second
+ * user must also become a member on the first user's group.
  */
 function commons_groups_og_membership_insert(OgMembership $og_membership) {
   if ($og_membership->type != 'trusted_contacts' || $og_membership->group_type != 'user') {
@@ -1201,6 +1205,10 @@ function commons_groups_og_membership_insert(OgMembership $og_membership) {
 
 /**
  * Implements hook_og_membership_update().
+ *
+ * Trusted Contacts are 2 users that are members on each other's groups.
+ * Whenever one of the OG memberships is updated, the other membership must be
+ * updated accordingly.
  */
 function commons_groups_og_membership_update(OgMembership $og_membership) {
   if ($og_membership->type != 'trusted_contacts' || $og_membership->group_type != 'user') {
@@ -1276,6 +1284,10 @@ function commons_groups_og_membership_update(OgMembership $og_membership) {
 
 /**
  * Implements hook_og_membership_delete().
+ *
+ * Trusted Contacts are 2 users that are members on each other's groups.
+ * Whenever one of the OG memberships is deleted, the other membership must be
+ * deleted too.
  */
 function commons_groups_og_membership_delete(OgMembership $og_membership, $type) {
   if ($og_membership->type != 'trusted_contacts' || $og_membership->group_type != 'user') {
@@ -1293,8 +1305,10 @@ function commons_groups_og_membership_delete(OgMembership $og_membership, $type)
 }
 
 /**
- * Menu callback; Creates a Trusted-Contact Invitation by adding two users to
- * each-other's groups, and setting the memberships' states to 'Pending'.
+ * Menu callback; Creates a Trusted-Contact Invitation.
+ *
+ * Adding two users to each-other's groups, and setting the memberships' states
+ * to 'Pending'.
  *
  * @param $account
  *    The group in which the logged-in user wants to join.
@@ -1409,8 +1423,9 @@ function commons_groups_approve_trust(OgMembership $og_membership) {
 }
 
 /**
- * Menu callback; Ignoring a Trusted-Contact Invitation by setting each user's
- * membership state to 'Blocked'.
+ * Menu callback; Ignoring a Trusted-Contact Invitation.
+ *
+ * Setting each user's membership state to 'Blocked'.
  *
  * @param $og_membership
  *    The membership in which the logged-in user is the group and the requesting
@@ -1484,7 +1499,7 @@ function commons_groups_approve_trust_access(OgMembership $og_membership, $token
 function commons_groups_ignore_trust_access(OgMembership $og_membership, $token) {
   $wrapper = entity_metadata_wrapper('og_membership', $og_membership);
 
-  return ($wrapper->field_membership_token->value() == $token);
+  return $wrapper->field_membership_token->value() == $token;
 }
 
 /**
@@ -1516,9 +1531,9 @@ function commons_group_is_trusted_contact($uid, $account = NULL) {
 function commons_groups_privatemsg_write_access($account) {
   global $user;
 
-  if ($user->uid == 1) {
+  if (user_access('administer group')) {
     // Always allow admin to send private messages.
-    return true;
+    return TRUE;
   }
 
   $uid = isset($account->uid) ? $account->uid : $account;
@@ -1527,7 +1542,9 @@ function commons_groups_privatemsg_write_access($account) {
 }
 
 /**
- * Implement hook_form_FORM_alter().
+ * Implement hook_form_FORM_ID_alter().
+ *
+ * According to design, 'body' field should be 'plain_text' by default.
  */
 function commons_groups_form_privatemsg_new_alter(&$form, &$form_state) {
   $form['body']['#format'] = 'plain_text';
