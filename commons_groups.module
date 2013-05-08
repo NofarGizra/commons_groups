@@ -1042,6 +1042,12 @@ function commons_groups_field_formatter_info() {
 
 /**
  * Implements hook_field_formatter_view().
+ *
+ * This is a copy of og_field_formatter_view() which was adapted for the
+ * "Trusted Contacts" functionality, so most changes are around the phrasing,
+ * and allowing users to send private messages.
+ *
+ * @see og_field_formatter_view()
  */
 function commons_groups_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   global $user;
