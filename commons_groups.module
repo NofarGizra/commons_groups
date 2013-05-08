@@ -1265,7 +1265,14 @@ function commons_groups_og_membership_update(OgMembership $og_membership) {
 
       // Prevent recursion.
       $og_membership->_skip_membership_update = TRUE;
-      $wrapper->save();
+
+      // Clone the Og membership, as in EntityAPIController::save() the
+      // entity->original property is removed. However since are re-saving the
+      // same updated entity, we want to make sure it doesn't happen on the
+      // original one, thus causing notices for example in
+      // og_og_membership_update()
+      $og_membership_clone = clone $og_membership;
+      $og_membership_clone->save();
 
       // Subtract 1 from unread invitations count.
       $account = user_load($og_membership->gid);
