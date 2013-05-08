@@ -103,6 +103,16 @@ function commons_groups_menu() {
     'type' => MENU_LOCAL_TASK,
   );
 
+  $items['user/%user/contacts/messages'] = array(
+    'title callback' => 'commons_groups_tab_title',
+    'title arguments' => array('messages'),
+    'page callback' => 'commons_groups_tab',
+    'page arguments' => array('messages'),
+    'access callback' => 'commons_groups_tab_access',
+    'access arguments' => array(1),
+    'type' => MENU_LOCAL_TASK,
+  );
+
   $items['user/%user/contacts/invitations'] = array(
     'title callback' => 'commons_groups_tab_title',
     'title arguments' => array('invitations'),
@@ -113,11 +123,11 @@ function commons_groups_menu() {
     'type' => MENU_LOCAL_TASK,
   );
 
-  $items['user/%user/contacts/messages'] = array(
+  $items['user/%user/contacts/trusted'] = array(
     'title callback' => 'commons_groups_tab_title',
-    'title arguments' => array('messages'),
+    'title arguments' => array('contacts'),
     'page callback' => 'commons_groups_tab',
-    'page arguments' => array('messages'),
+    'page arguments' => array('contacts'),
     'access callback' => 'commons_groups_tab_access',
     'access arguments' => array(1),
     'type' => MENU_LOCAL_TASK,
@@ -297,21 +307,23 @@ function commons_groups_tab_title($tab) {
         ->count()
         ->execute();
 
-      return t('Trusted Contacts [@count]', array('@count' => $count));
+      return t('Trusted Contacts (@count)', array('@count' => $count));
 
     case 'invitations':
       $wrapper = entity_metadata_wrapper('user', $user);
       $count = $wrapper->field_unread_invitations->value();
+      $count = $count ? $count : 0;
 
-      return t('Invitations [@count]', array('@count' => $count));
+      return t('Invitations (@count)', array('@count' => $count));
 
     case 'messages':
       module_load_include('inc', 'privatemsg', 'privatemsg.pages');
 
       $wrapper = entity_metadata_wrapper('user', $user);
       $count = $wrapper->field_unread_messages->value();
+      $count = $count ? $count : 0;
 
-      return t('Messages [@count]', array('@count' => $count));
+      return t('Messages (@count)', array('@count' => $count));
   }
   return;
 }
