@@ -282,7 +282,7 @@ function commons_groups_menu_alter(&$items) {
  */
 function commons_groups_admin_paths() {
   $paths = array(
-    'contacts/messages/popup/*' => TRUE,
+    'user/*/contacts/messages/popup/*' => TRUE,
   );
 
   return $paths;
