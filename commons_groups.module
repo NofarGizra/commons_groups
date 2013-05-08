@@ -1163,6 +1163,11 @@ function commons_groups_og_membership_insert(OgMembership $og_membership) {
     return;
   }
 
+  if ($og_membership->gid == $og_membership->etid) {
+    // A user was created.
+    return;
+  }
+
   // We're using a custom token because Drupal provides a token that relies on
   // logged-in user, and here we want the token to be used by the responding
   // user when approving/ignoring the logged-in user's request.
