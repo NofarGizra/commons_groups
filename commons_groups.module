@@ -1216,7 +1216,7 @@ function commons_groups_og_membership_insert(OgMembership $og_membership) {
 
   // Make sure OG membership is updated, and not re-inserted.
   unset($og_membership->is_new);
-
+  $og_membership->_skip_membership_update = TRUE;
   $wrapper->save();
 
   if ($og_membership->state == OG_STATE_PENDING) {
