@@ -74,7 +74,5 @@ features[views_view][] = commons_groups_contributors
 features[views_view][] = commons_groups_directory
 features[views_view][] = commons_groups_recent_content
 features[views_view][] = commons_groups_user_groups
-features_exclude[field][message-trusted_contact_request_approved-field_approving_user] = message-trusted_contact_request_approved-field_approving_user
-features_exclude[field][message-trusted_contact_request_pending-field_requesting_user] = message-trusted_contact_request_pending-field_requesting_user
 features_exclude[field][node-group-group_group] = node-group-group_group
 features_exclude[field][node-group-group_access] = node-group-group_access

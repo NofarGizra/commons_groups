@@ -64,8 +64,6 @@ function commons_groups_field_default_field_instances() {
 
   // Translatables
   // Included for use with string extractors like potx.
-  t('Approving user');
-  t('Confirmation');
   t('Determine if this is an OG group.');
   t('Group');
   t('Group membership');
@@ -77,11 +75,6 @@ function commons_groups_field_default_field_instances() {
   t('Group Logo');
   t('Hide contributed content from non-members');
   t('Privacy settings');
-  t('Membership Token');
-  t('My request');
-  t('Original OG Membership');
-  t('Requesting User');
-  t('Response date');
 
   return $field_instances;
 }
@@ -507,70 +500,6 @@ function commons_groups_field_definition(&$field_instances, $entity_type, $bundl
           'og_context' => 0,
           'skip_perm' => '0',
           'status' => 1,
-        ),
-      ),
-      'user_register_form' => FALSE,
-    ),
-    'view modes' => array(
-      'full' => array(
-        'custom settings' => FALSE,
-        'label' => 'Full',
-        'type' => 'og_list_default',
-      ),
-      'teaser' => array(
-        'custom settings' => FALSE,
-        'label' => 'Teaser',
-        'type' => 'og_list_default',
-      ),
-    ),
-    'widget' => array(
-      'active' => 0,
-      'module' => 'og',
-      'settings' => array(),
-      'type' => 'og_complex',
-      'weight' => 5,
-    ),
-  );
-
-  // Exported field_instance: 'node-post-og_user_group_ref'
-  $field_instances["$entity_type-$bundle-og_user_group_ref"] = array(
-    'bundle' => $bundle,
-    'default_value' => NULL,
-    'default_value_function' => 'commons_groups_entityreference_default_value',
-    'deleted' => '0',
-    'description' => '',
-    'display' => array(
-      'default' => array(
-        'label' => 'above',
-        'module' => 'og_ui',
-        'settings' => array(),
-        'type' => 'og_list_default',
-        'weight' => 11,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => $entity_type,
-    'field_name' => 'og_user_group_ref',
-    'label' => 'User groups',
-    'required' => 0,
-    'settings' => array(
-      'behaviors' => array(
-        'og_widget' => array(
-          'admin' => array(
-            'widget_type' => 'entityreference_autocomplete_tags',
-          ),
-          'default' => array(
-            'widget_type' => 'entityreference_autocomplete_tags',
-          ),
-          'status' => TRUE,
-        ),
-        'prepopulate' => array(
-          'status' => 0,
         ),
       ),
       'user_register_form' => FALSE,
