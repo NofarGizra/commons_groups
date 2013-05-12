@@ -18,7 +18,6 @@ function commons_groups_field_default_field_instances() {
       }
     }
   }
-
   $group_bundles = og_get_all_group_bundle();
   if (empty($group_bundles['node'])) {
     // Make sure group_bundles contains at least the group node bundle, in order

@@ -45,7 +45,7 @@ function commons_groups_entity_view($entity, $type, $view_mode, $langcode) {
   }
 }
 
-/*
+/**
  * Implements hook_form_FORM_ID_alter().
  *
  * Alter the privacy settings fields.
@@ -225,6 +225,7 @@ function commons_groups_commons_entity_integration() {
   );
 }
 
+
 function commons_groups_group_contributors_count_topics($group) {
 
   // Format the count of contributors.
@@ -266,11 +267,7 @@ function commons_groups_group_contributors_count_topics($group) {
   return $output;
 }
 
-/**
- * Implement hook_module_implements_alter().
- *
- * Set commons_Groups form alter to happen after views bulk operations.
- */
+/* set commons_Groups form alter to happen after views bulk operations */
 function commons_groups_module_implements_alter(&$implementations, $hook) {
   if ($hook == 'form_alter') {
     $group = $implementations['commons_groups'];
@@ -280,8 +277,8 @@ function commons_groups_module_implements_alter(&$implementations, $hook) {
 }
 
 /**
- * Implements hook_form_alter().
- */
+* Implements hook_form_alter().
+*/
 function commons_groups_form_alter(&$form, &$form_state, $form_id) {
   if($form_id == 'views_exposed_form' && strstr($form['#id'], 'views-exposed-form-commons-groups-directory')) {
     $form['groups-keys']['#attributes'] = array(
@@ -324,7 +321,7 @@ function commons_groups_form_alter(&$form, &$form_state, $form_id) {
 }
 
 /**
- * Submit handler; Called if the form is for a node enabled as group content.
+ * Submit handler called if the form is for a node enabled as group content.
  */
 function commons_groups_node_in_group_submit(&$form, &$form_state) {
   if (isset($form_state['values']['og_group_ref'][LANGUAGE_NONE][0])) {
@@ -332,7 +329,6 @@ function commons_groups_node_in_group_submit(&$form, &$form_state) {
     $form_state['redirect'] = 'node/' . $group;
   }
 }
-
 /**
 * Implements hook_system_info_alter().
 */
@@ -450,6 +446,7 @@ function commons_groups_token_info() {
     'tokens' => $tokens,
   );
 }
+
 
 /**
  * Implements hook_tokens().
@@ -592,8 +589,8 @@ function commons_groups_entityreference_default_value($entity_type, $entity, $fi
 }
 
 /**
- * Implements hook_strongarm_alter().
- */
+* Implements hook_strongarm_alter().
+*/
  function commons_groups_strongarm_alter(&$items) {
   // Expose the Group content type for integration with Commons Radioactivity.
   if (isset($items['commons_radioactivity_entity_types'])) {
@@ -728,8 +725,8 @@ function commons_groups_set_group_permissions($node) {
 }
 
 /**
- * Returns an array of entity types that are enabled via Commons Groups.
- */
+* Returns an array of entity types that are enabled via Commons Groups.
+*/
 function commons_groups_get_group_content_entity_types() {
   // Find all Commons Entity integrations.
   $commons_entity_integrations = module_invoke_all('commons_entity_integration');
@@ -783,8 +780,8 @@ function commons_groups_first_contribution($account, $node) {
 }
 
 /**
- * Implements hook_commons_bw_group_widget().
- */
+* Implements hook_commons_bw_group_widget().
+*/
 function commons_groups_commons_bw_group_widget() {
   return array(
     'commons_all' => array(
