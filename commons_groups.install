@@ -104,4 +104,4 @@ function commons_groups_update_3108() {
   );
   features_revert($revert);
   return array();
-}
+} 
