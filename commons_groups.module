@@ -161,7 +161,6 @@ function commons_groups_menu_alter(&$items) {
     $items['node/%/group']['title'] = t('Administer group');
   }
 }
-
 /**
  * Implements hook_block_info().
  */
@@ -275,7 +274,6 @@ function commons_groups_module_implements_alter(&$implementations, $hook) {
     $implementations['commons_groups'] = $group;
   }
 }
-
 /**
 * Implements hook_form_alter().
 */
@@ -751,9 +749,9 @@ function commons_groups_get_group_content_entity_types() {
 }
 
 /**
- * When a user first creates content within a group,
- * grant her the contributor role within that group.
- */
+* When a user first creates content within a group,
+* grant her the contributor role within that group.
+*/
 function commons_groups_first_contribution($account, $node) {
   // Find the groups that this piece of content belongs to.
   $groups = og_get_entity_groups('node', $node);
