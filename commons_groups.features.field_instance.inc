@@ -10,6 +10,25 @@
 function commons_groups_field_default_field_instances() {
   $field_instances = array();
 
+  $commons_groups_entity_types = commons_groups_get_group_content_entity_types();
+  if (!empty($commons_groups_entity_types)) {
+    foreach ($commons_groups_entity_types as $entity_type => $bundles) {
+      foreach(array_keys($bundles) as $bundle) {
+        commons_groups_field_definition($field_instances, $entity_type, $bundle);
+      }
+    }
+  }
+
+  $group_bundles = og_get_all_group_bundle();
+  if (empty($group_bundles['node'])) {
+    // Make sure group_bundles contains at least the group node bundle, in order
+    // to create the group audience field for it when installing the profile.
+    $group_bundles['node'] = array('group' => TRUE);
+  }
+  foreach(array_keys($group_bundles['node']) as $bundle) {
+    commons_groups_field_definition_group($field_instances, 'node', $bundle);
+  }
+
   // Exported field_instance: 'og_membership-og_membership_type_default-og_membership_request'
   $field_instances['og_membership-og_membership_type_default-og_membership_request'] = array(
     'bundle' => 'og_membership_type_default',
@@ -42,25 +61,6 @@ function commons_groups_field_default_field_instances() {
       'weight' => 0,
     ),
   );
-
-  $commons_groups_entity_types = commons_groups_get_group_content_entity_types();
-  if (!empty($commons_groups_entity_types)) {
-    foreach ($commons_groups_entity_types as $entity_type => $bundles) {
-      foreach(array_keys($bundles) as $bundle) {
-        commons_groups_field_definition($field_instances, $entity_type, $bundle);
-      }
-    }
-  }
-
-  $group_bundles = og_get_all_group_bundle();
-  if (empty($group_bundles['node'])) {
-    // Make sure group_bundles contains at least the group node bundle, in order
-    // to create the group audience field for it when installing the profile.
-    $group_bundles['node'] = array('group' => TRUE);
-  }
-  foreach(array_keys($group_bundles['node']) as $bundle) {
-    commons_groups_field_definition_group($field_instances, 'node', $bundle);
-  }
 
   // Translatables
   // Included for use with string extractors like potx.
