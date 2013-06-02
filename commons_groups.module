@@ -408,7 +408,7 @@ function commons_groups_og_user_access_alter(&$perm, $context) {
   }
 
   $wrapper = entity_metadata_wrapper($group_type, $group);
-  $access_create = $wrapper->field_og_subscribe_settings->value() == 'anyone';
+  $access_create = $account->uid && $wrapper->field_og_subscribe_settings->value() == 'anyone';
 
   // Make sure user can view group (i.e. it's not private).
   $commons_groups_entity_types = commons_groups_get_group_content_entity_types();
@@ -501,35 +501,7 @@ function commons_groups_tokens($type, $tokens, $data = array(), $options = array
       $related_groups = array_values($related_groups);
       // Generate the appropriate text depending on the number of groups
       // associated with the message:
-
-      // In 1 group: "in the x group"
-      if (count($related_groups) == 1) {
-        $text = t(' in the !group group', array('!group' => l($related_groups[0]->title, 'node/' . $related_groups[0]->nid))) ;
-        $replacements['[commons-groups:in-groups-text]'] = $text;
-      }
-
-      // In 2 groups: "in the x and y groups"
-      if (count($related_groups) == 2) {
-        $text = t(' in the !group-0 and !group-1 groups', array('!group-0' => l($related_groups[0]->title, 'node/' . $related_groups[0]->nid), '!group-1' => l($related_groups[1]->title, 'node/' . $related_groups[1]->nid)));
-      }
-
-      // In more than 2 groups: "in the x, y and z groups"
-      if (count($related_groups) > 2) {
-        // Separate the last group.
-        $last_group = array_pop($related_groups);
-        $text = ' in the ';
-        // Prepare tokens for t() for each of the other groups.
-        foreach ($related_groups as $key => $this_group) {
-          $text .= "!group-$key, ";
-          $t_args["!group-$key"] = l($this_group->title, 'node/' . $this_group->nid);
-        }
-        // Prepare the last group token.
-        $text .= " and !group-$last_group->nid groups.";
-        $t_args["!group-$last_group->nid"] = l($last_group->title, 'node/' . $last_group->nid);
-        // Prepare the full text with all of the groups and their tokens:
-        $text = t($text, $t_args);
-      }
-      $replacements['[commons-groups:in-groups-text]'] = $text;
+      $replacements['[commons-groups:in-groups-text]'] = commons_groups_related_groups_text($related_groups);
       return $replacements;
     }
   }
@@ -542,6 +514,44 @@ function commons_groups_message_partial_default() {
     'safe_value' => '[commons-groups:in-groups-text]',
   );
   return $partial;
+}
+
+/**
+ * Build the related-groups text for nodes.
+ *
+ * @param $related_groups
+ *   Array of groups referenced by the node.
+ *
+ * @return
+ *   String containing the related groups.
+ */
+function commons_groups_related_groups_text($related_groups) {
+  // In 1 group: "in the x group"
+  if (count($related_groups) == 1) {
+    return t(' in the !group group', array('!group' => l($related_groups[0]->title, 'node/' . $related_groups[0]->nid))) ;
+  }
+
+  // In 2 groups: "in the x and y groups"
+  if (count($related_groups) == 2) {
+    return t(' in the !group-0 and !group-1 groups', array('!group-0' => l($related_groups[0]->title, 'node/' . $related_groups[0]->nid), '!group-1' => l($related_groups[1]->title, 'node/' . $related_groups[1]->nid)));
+  }
+
+  // In more than 2 groups: "in the x, y and z groups"
+  if (count($related_groups) > 2) {
+    // Separate the last group.
+    $last_group = array_pop($related_groups);
+    $text = ' in the ';
+    // Prepare tokens for t() for each of the other groups.
+    foreach ($related_groups as $key => $this_group) {
+      $text .= "!group-$key, ";
+      $t_args["!group-$key"] = l($this_group->title, 'node/' . $this_group->nid);
+    }
+    // Prepare the last group token.
+    $text .= " and !group-$last_group->nid groups.";
+    $t_args["!group-$last_group->nid"] = l($last_group->title, 'node/' . $last_group->nid);
+    // Prepare the full text with all of the groups and their tokens:
+    return t($text, $t_args);
+  }
 }
 
 function commons_groups_group_submission_message($form, &$form_state) {
@@ -789,6 +799,7 @@ function commons_groups_commons_bw_group_widget() {
       'display' => 'default',
       'weight' => -10,
       'default' => 1,
+      'bundle' => 'post',
     ),
   );
 }
@@ -822,5 +833,121 @@ function commons_groups_field_access($op, $field, $entity_type, $entity, $accoun
 
   if (module_exists('og_access') && in_array($field_name, array(OG_CONTENT_ACCESS_FIELD, OG_ACCESS_FIELD))) {
     return FALSE;
+  }
+}
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function commons_groups_field_formatter_info() {
+  return array(
+    'commons_groups_group_subscribe' => array(
+      'label' => t('Commons groups subscribe link'),
+      'field types' => array('list_boolean'),
+      'settings' => array(
+        'field_name' => FALSE,
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function commons_groups_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  global $user;
+  $account = clone $user;
+
+  if ($display['type'] != 'commons_groups_group_subscribe') {
+    return;
+  }
+
+  if (!og_is_group($entity_type, $entity)) {
+    return;
+  }
+
+  if (!empty($entity->uid) && ($entity->uid == $account->uid)) {
+    // User is the group manager.
+    $element[0] = array('#markup' => t('You are the group manager'));
+    return $element;
+  }
+
+  list($id,, $bundle) = entity_extract_ids($entity_type, $entity);
+  if (og_is_member($entity_type, $id, 'user', $account, array(OG_STATE_ACTIVE, OG_STATE_PENDING))) {
+    if (og_user_access($entity_type, $id, 'unsubscribe', $account)) {
+      $links['title'] = t('Leave group');
+      $links['href'] = "group/$entity_type/$id/unsubscribe";
+    }
+  }
+  else {
+    if (og_is_member($entity_type, $id, 'user', $account, array(OG_STATE_BLOCKED))) {
+      // If user is blocked, they should not be able to apply for membership.
+      return;
+    }
+
+    // Check if user can subscribe to the field.
+    if (empty($settings['field_name']) && $audience_field_name = og_get_best_group_audience_field('user', $account, $entity_type, $bundle)) {
+      $settings['field_name'] = $audience_field_name;
+    }
+    if (!$settings['field_name']) {
+      return;
+    }
+
+    $field_info = field_info_field($settings['field_name']);
+
+    // Check if entity is referencable.
+    if ($field_info['settings']['target_type'] != $entity_type) {
+      // Group type doesn't match.
+      return;
+    }
+    if (!empty($field_info['settings']['handler_settings']['target_bundles']) && !in_array($bundle, $field_info['settings']['handler_settings']['target_bundles'])) {
+      // Bundles don't match.
+      return;
+    }
+
+    if (!og_check_field_cardinality('user', $account, $settings['field_name'])) {
+      $element[0] = array('#markup' => format_plural($field_info['cardinality'], 'You are already registered to another group', 'You are already registered to @count groups'));
+      return $element;
+    }
+
+    $url = "group/$entity_type/$id/subscribe";
+    if ($settings['field_name']) {
+      $url .= '/' . $settings['field_name'];
+    }
+
+    // Don't display join link on public groups.
+    if (!og_user_access($entity_type, $id, 'subscribe without approval', $account)) {
+      if (og_user_access($entity_type, $id, 'subscribe')) {
+        $subscription_type = t('Moderated group');
+        $links['title'] = t('Join group');
+        if ($account->uid) {
+          $links['href'] = $url;
+        }
+        else {
+          $links['href'] = 'user/login';
+          $links['options'] = array('query' => array('destination' => $url));
+        }
+      }
+      else {
+        $element[0] =  array('#markup' => '<div class="subscription-type">' . t('Invite-only group') . '</div>');
+        return $element;
+      }
+    }
+  }
+
+  if (!empty($links['title'])) {
+    $links += array('options' => array());
+    $element[0] = array(
+      '#type' => 'link',
+      '#title' => $links['title'],
+      '#href' => $links['href'],
+      '#options' => $links['options'],
+    );
+
+    if (!empty($subscription_type)) {
+      $element[0]['#prefix'] = '<div class="subscription-type">' . $subscription_type . '</div>';
+    }
+
+    return $element;
   }
 }
